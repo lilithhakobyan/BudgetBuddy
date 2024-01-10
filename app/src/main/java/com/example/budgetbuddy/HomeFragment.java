@@ -17,9 +17,32 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
+                             Bundle savedInstanceState)
+
+    {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // Find the button with the ID "income_button" (replace with your actual button ID)
+        Button incomeButton = (Button) view.findViewById(R.id.income);
+
+        // Set the onClick listener for the button
+        incomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get the MainActivity instance
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    // Call the loadFragment method of the MainActivity to open IncomeFragment
+                    activity.loadFragment(new IncomeFragment(), false);
+                }
+            }
+        });
+
+        return view;
     }
 
 
