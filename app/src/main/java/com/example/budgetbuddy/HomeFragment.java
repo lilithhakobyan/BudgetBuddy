@@ -28,16 +28,25 @@ public class HomeFragment extends Fragment {
 
         // Find the button with the ID "income_button" (replace with your actual button ID)
         Button incomeButton = (Button) view.findViewById(R.id.income);
+        Button expenseButton = (Button) view.findViewById(R.id.expense);
 
         // Set the onClick listener for the button
         incomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get the MainActivity instance
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    // Call the loadFragment method of the MainActivity to open IncomeFragment
                     activity.loadFragment(new IncomeFragment(), false);
+                }
+            }
+        });
+
+        expenseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.loadFragment(new ExpenseFragment(), false);
                 }
             }
         });

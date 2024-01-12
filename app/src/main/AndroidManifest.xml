@@ -13,10 +13,6 @@
         android:theme="@style/Theme.BudgetBuddy"
         tools:targetApi="31">
         <activity
-            android:name=".ActionBarActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

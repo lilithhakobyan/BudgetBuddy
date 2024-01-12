@@ -6,16 +6,6 @@
     </style>
 
     <style name="Theme.BudgetBuddy" parent="Base.Theme.BudgetBuddy" />
-    
-    <style name="toolbartext" parent="TextAppearance.MaterialComponents.Button">
-        <item name="android:textSize">16dp</item>
-    </style>
-    
-    <style name="BudgetBuddy.Toolbar" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">@color/white</item>
-        <item name="theme">@style/Theme.BudgetBuddy</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="titleTextAppearance">@style/toolbartext</item>
 
-    </style>
+
 </resources>
