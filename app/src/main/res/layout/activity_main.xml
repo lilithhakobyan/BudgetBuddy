@@ -6,17 +6,6 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     tools:context=".MainActivity">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        app:title="BudgetBuddy"
-        app:titleMarginStart="30dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        />
     
     <FrameLayout
         android:id="@+id/fragment_container"
