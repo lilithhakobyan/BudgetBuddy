@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
+
 public class ReminderFragment extends Fragment {
 
     private EditText editTextTask;
@@ -20,8 +21,6 @@ public class ReminderFragment extends Fragment {
     private ListView listViewTasks;
     private ArrayList<String> taskList;
     private ArrayAdapter<String> adapter;
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +52,4 @@ public class ReminderFragment extends Fragment {
             editTextTask.getText().clear();
         }
     }
-
-
 }

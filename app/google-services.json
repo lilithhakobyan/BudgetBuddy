@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "291074126711",
+    "firebase_url": "https://budgetbuddy-e-default-rtdb.firebaseio.com",
+    "project_id": "budgetbuddy-e",
+    "storage_bucket": "budgetbuddy-e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291074126711:android:3ba35b2dd46ea3e876e772",
+        "android_client_info": {
+          "package_name": "com.example.budgetbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtUM6O2IDVcVYr24S4bpBqWVfvYLvQTx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
