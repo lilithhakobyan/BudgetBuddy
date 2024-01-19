@@ -23,14 +23,11 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState)
 
     {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Find the button with the ID "income_button" (replace with your actual button ID)
         Button incomeButton = (Button) view.findViewById(R.id.income);
         Button expenseButton = (Button) view.findViewById(R.id.expense);
 
-        // Set the onClick listener for the button
         incomeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

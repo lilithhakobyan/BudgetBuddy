@@ -59,18 +59,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void loadFragment(Fragment fragment, boolean isAppInitialized){
+    public void loadFragment(Fragment fragment, boolean addToBackStack) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        if (isAppInitialized){
-            fragmentTransaction.add(R.id.fragment_container, fragment);
-        } else {
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+
+        if (addToBackStack) {
+            fragmentTransaction.addToBackStack(null);
         }
 
         fragmentTransaction.commit();
     }
+
 
     @Override
     public void onBackPressed() {
