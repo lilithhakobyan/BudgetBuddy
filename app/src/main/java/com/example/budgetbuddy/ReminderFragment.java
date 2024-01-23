@@ -2,6 +2,7 @@ package com.example.budgetbuddy;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.budgetbuddy.AddReminderFragment;
+import com.example.budgetbuddy.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ import java.util.ArrayList;
 public class ReminderFragment extends Fragment {
 
 
-
+    private EditText editTextTask;
     private FloatingActionButton buttonAdd;
     private ListView listViewTasks;
     private ArrayList<String> taskList;
@@ -51,7 +54,10 @@ public class ReminderFragment extends Fragment {
         fragmentTransaction.replace(R.id.fragment_container, addReminderFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+
+        Log.d("ReminderFragment", "addReminderFragment() called");
     }
+
 
 
 
