@@ -1,6 +1,5 @@
 package com.example.budgetbuddy;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,32 +7,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.budgetbuddy.AddReminderFragment;
-import com.example.budgetbuddy.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-
 public class ReminderFragment extends Fragment {
 
-
-    private EditText editTextTask;
     private FloatingActionButton buttonAdd;
     private ListView listViewTasks;
     private ArrayList<String> taskList;
     private ArrayAdapter<String> adapter;
 
+    private static final String TAG = "ReminderFragment";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reminder, container, false);
+
+        listViewTasks = view.findViewById(R.id.listViewTasks);
+        taskList = new ArrayList<>();
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, taskList);
+        listViewTasks.setAdapter(adapter);
+
 
         buttonAdd = view.findViewById(R.id.addReminder_button);
 
@@ -44,7 +47,30 @@ public class ReminderFragment extends Fragment {
             }
         });
 
+        fetchRemindersFromFirestore();
+
         return view;
+    }
+
+    private void fetchRemindersFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("reminders")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        taskList.clear();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String reminderTitle = document.getString("title");
+                            taskList.add(reminderTitle);
+                        }
+
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Log.w(TAG, "Error getting reminders", task.getException());
+                    }
+                });
     }
 
     private void addReminderFragment() {
@@ -55,10 +81,6 @@ public class ReminderFragment extends Fragment {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
-        Log.d("ReminderFragment", "addReminderFragment() called");
+        Log.d(TAG, "addReminderFragment() called");
     }
-
-
-
-
 }
