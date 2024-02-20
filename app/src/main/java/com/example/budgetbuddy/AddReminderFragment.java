@@ -66,11 +66,10 @@ public class AddReminderFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                // Handle the case where no choice is selected
+
             }
         });
 
-        // Button click listener
         Button submitButton = view.findViewById(R.id.submit_btn);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +79,7 @@ public class AddReminderFragment extends Fragment {
             }
         });
 
-        // Close button click listener
+
         ImageView imageView = view.findViewById(R.id.close_addrem);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,12 +144,10 @@ public class AddReminderFragment extends Fragment {
                 .add(reminderData)
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "Reminder added with ID: " + documentReference.getId());
-                    // You may want to notify the user or perform other actions here
+
                 })
                 .addOnFailureListener(e -> {
-                    // Handle errors
                     Log.w(TAG, "Error adding reminder", e);
-                    // Handle error, notify the user, etc.
                 });
     }
 
@@ -173,7 +170,7 @@ public class AddReminderFragment extends Fragment {
         alertDialog.show();
     }
 
-    private void openReminderFragment() {
+    public void openReminderFragment() {
         ReminderFragment fragmentB = new ReminderFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragmentB);

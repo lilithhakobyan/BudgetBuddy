@@ -5,8 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
@@ -37,6 +37,15 @@ public class ReminderFragment extends Fragment {
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, taskList);
         listViewTasks.setAdapter(adapter);
 
+        listViewTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedReminder = taskList.get(position);
+                BottomSheetDialog bottomSheetFragment = new BottomSheetDialog();
+                bottomSheetFragment.show(getParentFragmentManager(), bottomSheetFragment.getTag());
+            }
+        });
+
 
         buttonAdd = view.findViewById(R.id.addReminder_button);
 
@@ -52,7 +61,11 @@ public class ReminderFragment extends Fragment {
         return view;
     }
 
-    private void fetchRemindersFromFirestore() {
+    public void onReminderDeleted() {
+        fetchRemindersFromFirestore();
+    }
+
+    public void fetchRemindersFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("reminders")
@@ -83,4 +96,5 @@ public class ReminderFragment extends Fragment {
 
         Log.d(TAG, "addReminderFragment() called");
     }
+
 }
