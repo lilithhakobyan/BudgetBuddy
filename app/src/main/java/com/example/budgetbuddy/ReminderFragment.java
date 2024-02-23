@@ -19,7 +19,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class ReminderFragment extends Fragment {
+public class ReminderFragment extends Fragment implements AddReminderFragment.OnReminderAddedListener {
 
     private FloatingActionButton buttonAdd;
     private ListView listViewTasks;
@@ -46,7 +46,6 @@ public class ReminderFragment extends Fragment {
             }
         });
 
-
         buttonAdd = view.findViewById(R.id.addReminder_button);
 
         buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -61,8 +60,9 @@ public class ReminderFragment extends Fragment {
         return view;
     }
 
-    public void onReminderDeleted() {
-        fetchRemindersFromFirestore();
+    public void onReminderAdded(ReminderClass newReminder) {
+        taskList.add(newReminder.getTitle());
+        adapter.notifyDataSetChanged();
     }
 
     public void fetchRemindersFromFirestore() {
@@ -96,5 +96,4 @@ public class ReminderFragment extends Fragment {
 
         Log.d(TAG, "addReminderFragment() called");
     }
-
 }

@@ -43,6 +43,10 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_dialog, container, false);
 
+        firestore = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         LinearLayout makeChangesLayout = view.findViewById(R.id.make_changes_layout);
         LinearLayout deleteReminderLayout = view.findViewById(R.id.delete_reminder_layout);
         ImageView Close = view.findViewById(R.id.close_bottom_sheet_dialog);
@@ -59,7 +63,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
         Close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    dismiss();
+                dismiss();
             }
         });
 
@@ -68,7 +72,12 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
     }
 
     private void deleteReminder() {
-        DocumentReference userDocRef = db.collection("users")
+        // Ensure firestore is initialized
+        if (firestore == null) {
+            firestore = FirebaseFirestore.getInstance();
+        }
+
+        DocumentReference userDocRef = firestore.collection("users")
                 .document(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail()));
 
         CollectionReference remindersCollection = userDocRef.collection("reminders");

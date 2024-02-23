@@ -41,7 +41,7 @@ public class ReminderAdapter extends ArrayAdapter<ReminderClass> {
 
             holder = new ViewHolder();
             holder.titleTextView = convertView.findViewById(R.id.describeReminderTextView);
-            holder.dateTimeTextView = convertView.findViewById(R.id.dateRemEditText);
+            holder.dateTimeTextView = convertView.findViewById(R.id.dateRemText);
 
             convertView.setTag(holder);
         } else {

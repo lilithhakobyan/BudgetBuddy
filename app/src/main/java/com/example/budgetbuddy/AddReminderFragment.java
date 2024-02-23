@@ -3,6 +3,8 @@ package com.example.budgetbuddy;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -14,11 +16,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
+import com.example.budgetbuddy.R;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -26,42 +34,66 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class AddReminderFragment extends Fragment {
 
-    private EditText describeReminderEditText, dateRemEditText, timeRemEditText, amountEditText;
+    private EditText describeReminderEditText, amountEditText;
+    private TextView timeRemText;
     private Spinner choiceSpinner;
     private FirebaseFirestore db;
+    private Button DateButton;
+    private Button TimeButton;
+    private TextView dateRemText;
+
+    private List<ReminderClass> reminderList = new ArrayList<>();
+
+    private static final String DATE_TIME_FORMAT = "MM/dd/yyyy HH:mm";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_reminder, container, false);
 
-        // Initialize UI components
         describeReminderEditText = view.findViewById(R.id.describeReminderEditText);
-        dateRemEditText = view.findViewById(R.id.dateRemEditText);
-        timeRemEditText = view.findViewById(R.id.timeRemEditText);
+        timeRemText = view.findViewById(R.id.timeRemText);
         amountEditText = view.findViewById(R.id.AmountEditText);
         choiceSpinner = view.findViewById(R.id.choiceSpinner);
+        DateButton = view.findViewById(R.id.date_button);
+        dateRemText = view.findViewById(R.id.dateRemText);
+        TimeButton = view.findViewById(R.id.time_button);
 
-        // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
-        // Set up the Spinner with choices
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.choices_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         choiceSpinner.setAdapter(adapter);
 
-        // Spinner item selection listener
+
+        DateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDatePicker();
+            }
+
+        });
+
+        TimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openTimePicker();
+            }
+        });
         choiceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // You can add any specific logic here if needed
+
             }
 
             @Override
@@ -88,49 +120,127 @@ public class AddReminderFragment extends Fragment {
             }
         });
 
-        EditText dateEditText = view.findViewById(R.id.dateRemEditText);
-        dateEditText.addTextChangedListener(new TextWatcher() {
-            private static final int MAX_LENGTH = 8;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0 && (editable.length() % 3) == 0) {
-                    final char c = editable.charAt(editable.length() - 1);
-                    if ('/' == c) {
-                        editable.delete(editable.length() - 1, editable.length());
-                    } else {
-                        editable.insert(editable.length() - 1, "/");
-                    }
-                }
-
-                if (editable.length() > MAX_LENGTH) {
-                    editable.delete(MAX_LENGTH, editable.length());
-                }
-            }
-        });
 
         return view;
     }
 
+    private void openDatePicker() {
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                month = month + 1;
+
+                String formattedDay = (day < 10) ? "0" + day : String.valueOf(day);
+                String formattedMonth = (month < 10) ? "0" + month : String.valueOf(month);
+
+                dateRemText.setText(formattedDay + "/" + formattedMonth + "/" + year);
+            }
+        }, currentYear, currentMonth, currentDay);
+
+        datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int year = datePickerDialog.getDatePicker().getYear();
+                int month = datePickerDialog.getDatePicker().getMonth() + 1;  // Month is 0-based
+                int day = datePickerDialog.getDatePicker().getDayOfMonth();
+
+
+                String formattedDay = (day < 10) ? "0" + day : String.valueOf(day);
+                String formattedMonth = (month < 10) ? "0" + month : String.valueOf(month);
+                String selectedDate = formattedDay + "/" + formattedMonth + "/" + year;
+
+                dateRemText.setText(selectedDate);
+
+            }
+        });
+
+        datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        datePickerDialog.show();
+
+        Button positiveButton = datePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positiveButton != null) {
+            positiveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple));
+        }
+
+        Button negativeButton = datePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        if (negativeButton != null) {
+            negativeButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple));
+        }
+    }
+
+
+    private void openTimePicker() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(), R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+                timeRemText.setText(selectedTime);
+
+
+            }
+        }, 15, 30, false);
+
+        timePickerDialog.show();
+
+
+
+        timePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+            }
+
+        });
+        timePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        Button positiveButton = timePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positiveButton != null) {
+            positiveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple));
+        }
+
+        Button negativeButton = timePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        if (negativeButton != null) {
+            negativeButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple));
+        }
+    }
+
+
     private void saveReminderToFirestore() {
-        // Access the values entered by the user
         String reminderTitle = describeReminderEditText.getText().toString();
-        String dateText = dateRemEditText.getText().toString();
-        String timeText = timeRemEditText.getText().toString();
+        if (reminderTitle.trim().isEmpty()) {
+            Toast.makeText(requireContext(), "Reminder title is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String dateText = dateRemText.getText().toString();
+        String timeText = timeRemText.getText().toString();
         String amountText = amountEditText.getText().toString();
         String selectedChoice = choiceSpinner.getSelectedItem().toString();
 
         String dateTimeString = dateText + " " + timeText;
         long dateTime = convertStringToTimestamp(dateTimeString);
 
+        boolean settled = false;
+
+        ReminderClass newReminder = new ReminderClass(reminderTitle, dateTime, amountText, selectedChoice, settled);
+
+        reminderList.add(newReminder);
 
         Map<String, Object> reminderData = new HashMap<>();
         reminderData.put("title", reminderTitle);
@@ -139,17 +249,20 @@ public class AddReminderFragment extends Fragment {
         reminderData.put("amount", amountText);
         reminderData.put("choice", selectedChoice);
         reminderData.put("dateTime", dateTime);
+        reminderData.put("settled", settled);
 
         db.collection("reminders")
                 .add(reminderData)
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "Reminder added with ID: " + documentReference.getId());
-
                 })
                 .addOnFailureListener(e -> {
                     Log.w(TAG, "Error adding reminder", e);
                 });
     }
+
+
+
 
     private void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -179,7 +292,7 @@ public class AddReminderFragment extends Fragment {
     }
 
     private long convertStringToTimestamp(String dateTimeString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.UK);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.UK);
         try {
             Date date = dateFormat.parse(dateTimeString);
             return date.getTime();
@@ -188,5 +301,10 @@ public class AddReminderFragment extends Fragment {
             Toast.makeText(requireContext(), "Error parsing date/time", Toast.LENGTH_SHORT).show();
             return 0;
         }
+
+    }
+
+    public interface OnReminderAddedListener {
+        void onReminderAdded(ReminderClass newReminder);
     }
 }

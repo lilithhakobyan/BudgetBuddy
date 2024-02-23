@@ -82,8 +82,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/describeReminderEditText" />
 
-    <EditText
-        android:id="@+id/dateRemEditText"
+    <TextView
+        android:id="@+id/dateRemText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -92,31 +92,25 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:ems="10"
-        android:inputType="date"
-        android:hint="DD/MM/YY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.183"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateRemTextView" />
 
 
-    <EditText
-        android:id="@+id/timeRemEditText"
+    <TextView
+        android:id="@+id/timeRemText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:ems="10"
-        android:hint="HH:MM (24 hour format)"
-        android:inputType="time"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:ems="5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.172"
+        app:layout_constraintHorizontal_bias="0.837"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timeRemTextView"
-        app:layout_constraintVertical_bias="0.011" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/timeRemTextView"
@@ -131,7 +125,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.083"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateRemEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/dateRemText" />
 
     <Button
         android:id="@+id/submit_btn"
@@ -141,7 +135,8 @@
         android:text="Submit"
         app:layout_constraintTop_toBottomOf="@+id/choiceSpinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     <TextView
@@ -155,7 +150,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.118"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeRemEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/timeRemText" />
 
 
         <EditText
@@ -183,5 +178,26 @@
         android:layout_marginEnd="28dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AmountTextView" />
+
+    <Button
+        android:id="@+id/date_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:text="Pick date"
+        app:layout_constraintBottom_toBottomOf="@+id/dateRemText"
+        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/time_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:text="Pick time"
+        app:layout_constraintTop_toBottomOf="@+id/timeRemTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/timeRemText"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

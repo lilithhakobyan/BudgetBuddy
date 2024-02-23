@@ -20,6 +20,7 @@ public class ReminderClass {
         this.settled = settled;
     }
 
+
     public String getAmount() {
         return amount;
     }
