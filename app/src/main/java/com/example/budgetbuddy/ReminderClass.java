@@ -1,8 +1,9 @@
 package com.example.budgetbuddy;
 
+import java.io.Serializable;
 import java.security.Timestamp;
 
-public class ReminderClass {
+public class ReminderClass implements Serializable {
     private String title;
     private long dateTime;
     private String amount;
