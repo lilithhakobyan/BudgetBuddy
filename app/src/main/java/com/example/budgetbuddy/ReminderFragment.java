@@ -18,6 +18,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -69,25 +71,29 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
         adapter.notifyDataSetChanged();
     }
 
-    public void fetchRemindersFromFirestore() {
+    private void fetchRemindersFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        db.collection("reminders")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        taskList.clear();
+        if (user != null) {
+            db.collection("reminders")
+                    .whereEqualTo("userId", user.getUid())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            taskList.clear();
 
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String reminderTitle = document.getString("title");
-                            taskList.add(reminderTitle);
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String reminderTitle = document.getString("title");
+                                taskList.add(reminderTitle);
+                            }
+
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Log.w(TAG, "Error getting reminders", task.getException());
                         }
-
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        Log.w(TAG, "Error getting reminders", task.getException());
-                    }
-                });
+                    });
+        }
     }
 
     private void addReminderFragment() {
@@ -107,7 +113,7 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
         intent.putExtra("reminder", updatedReminder);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Set the alarm for the desired time
+
         if (alarmManager != null) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, updatedReminder.getDateTime(), pendingIntent);
         }

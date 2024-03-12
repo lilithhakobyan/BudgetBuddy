@@ -30,6 +30,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
@@ -51,6 +53,7 @@ public class AddReminderFragment extends Fragment {
     private Button DateButton;
     private Button TimeButton;
     private TextView dateRemText;
+    private FirebaseAuth auth;
 
     private List<ReminderClass> reminderList = new ArrayList<>();
 
@@ -69,6 +72,12 @@ public class AddReminderFragment extends Fragment {
         TimeButton = view.findViewById(R.id.time_button);
 
         db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
+        FirebaseUser user = auth.getCurrentUser();
+
+
+
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.choices_array, android.R.layout.simple_spinner_item);
@@ -223,11 +232,18 @@ public class AddReminderFragment extends Fragment {
 
 
     private void saveReminderToFirestore() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            Toast.makeText(requireContext(), "User not authenticated. Please log in.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String reminderTitle = describeReminderEditText.getText().toString();
         if (reminderTitle.trim().isEmpty()) {
             Toast.makeText(requireContext(), "Reminder title is required", Toast.LENGTH_SHORT).show();
             return;
         }
+
         String dateText = dateRemText.getText().toString();
         String timeText = timeRemText.getText().toString();
         String amountText = amountEditText.getText().toString();
@@ -250,18 +266,26 @@ public class AddReminderFragment extends Fragment {
         reminderData.put("choice", selectedChoice);
         reminderData.put("dateTime", dateTime);
         reminderData.put("settled", settled);
+        reminderData.put("userId", user.getUid());
 
         db.collection("reminders")
                 .add(reminderData)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "Reminder added with ID: " + documentReference.getId());
-                })
-                .addOnFailureListener(e -> {
-                    Log.w(TAG, "Error adding reminder", e);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Reminder added with ID: " + task.getResult().getId());
+                        clearInputFields();
+                    } else {
+                        Log.w(TAG, "Error adding reminder", task.getException());
+                    }
                 });
     }
 
-
+    private void clearInputFields() {
+        describeReminderEditText.getText().clear();
+        amountEditText.getText().clear();
+        timeRemText.setText("");
+        dateRemText.setText("");
+    }
 
 
     private void showAlertDialog() {
@@ -286,6 +310,11 @@ public class AddReminderFragment extends Fragment {
     public void openReminderFragment() {
         ReminderFragment fragmentB = new ReminderFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        Bundle args = new Bundle();
+        args.putString("userId", auth.getCurrentUser().getUid());
+        fragmentB.setArguments(args);
+
         transaction.replace(R.id.fragment_container, fragmentB);
         transaction.addToBackStack(null);
         transaction.commit();

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.budgetbuddy.demo.DemoActivity;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     TextView loginTextView;
@@ -30,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
         skipTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+                startActivity(new Intent(WelcomeActivity.this, DemoActivity.class));
             }
         });
 

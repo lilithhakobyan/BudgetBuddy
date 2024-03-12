@@ -17,4 +17,7 @@
     <string name="closebutton">Close Button for Activity</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="choose_currency">Choose currency</string>
+    <string name="default_web_client_id" translatable="false">291074126711-1bs10dga538kpt6t379jobrflb4dpngi.apps.googleusercontent.com</string>
+
 </resources>

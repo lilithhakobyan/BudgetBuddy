@@ -1,10 +1,12 @@
 package com.example.budgetbuddy;
 
 import android.os.Bundle;
+
 import android.util.Log;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         FirebaseApp.initializeApp(this);
 
         if (savedInstanceState == null) {
@@ -50,8 +53,10 @@ public class MainActivity extends AppCompatActivity{
                     loadFragment(new HomeFragment(), false);
                 } else if(itemId == R.id.nav_statistics ){
                     loadFragment(new StatisticsFragment(), false);
-                } else {
+                } else if(itemId == R.id.nav_reminder){
                     loadFragment(new ReminderFragment(), false);
+                } else {
+                    loadFragment(new SettingsFragment(), false);
                 }
 
                 return true;

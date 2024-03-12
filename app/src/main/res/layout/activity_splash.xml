@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3E2E59"
+    android:background="#7A4396"
     tools:context=".SplashActivity">
 
     <ImageView
@@ -12,6 +12,6 @@
         android:layout_width="242dp"
         android:layout_height="202dp"
         android:layout_centerInParent="true"
-        app:srcCompat="@drawable/logo" />
+        app:srcCompat="@drawable/img_4" />
 
 </RelativeLayout>

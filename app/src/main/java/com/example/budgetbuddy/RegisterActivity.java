@@ -74,6 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     sendEmailVerification();
                                     Toast.makeText(RegisterActivity.this, "Sign-up successful. Verification email sent.", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
                                     finish();
                                 } else {
@@ -102,6 +103,11 @@ public class RegisterActivity extends AppCompatActivity {
                                     Log.d(TAG, "Verification email sent.");
                                 } else {
                                     Log.e(TAG, "Failed to send verification email.", task.getException());
+
+                                    Exception exception = task.getException();
+                                    if (exception != null) {
+                                        Log.e("EmailVerification", "Error: " + exception.getMessage());
+                                    }
                                 }
                             }
                         });

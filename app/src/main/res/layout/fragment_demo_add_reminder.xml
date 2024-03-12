@@ -4,10 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_container_d">
 
     <ImageView
-        android:id="@+id/close_addrem"
+        android:id="@+id/close_addrem_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -19,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ReminderAddTextView"
+        android:id="@+id/ReminderAddTextView_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -27,20 +28,20 @@
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/close_addrem" />
+        app:layout_constraintTop_toBottomOf="@+id/close_addrem_d" />
 
     <TextView
-        android:id="@+id/describeReminderTextView"
+        android:id="@+id/describeReminderTextView_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="What do you want to be reminded of?"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ReminderAddTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/ReminderAddTextView_d" />
 
     <EditText
-        android:id="@+id/describeReminderEditText"
+        android:id="@+id/describeReminderEditText_d"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -50,13 +51,13 @@
         android:ems="10"
         android:inputType="text"
         android:text="Reminder"
-        app:layout_constraintTop_toBottomOf="@+id/describeReminderTextView"
+        app:layout_constraintTop_toBottomOf="@+id/describeReminderTextView_d"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/dateRemTextView" />
+        app:layout_constraintBottom_toTopOf="@+id/dateRemTextView_d" />
 
     <TextView
-        android:id="@+id/dateRemTextView"
+        android:id="@+id/dateRemTextView_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
@@ -66,10 +67,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.017"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/describeReminderEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/describeReminderEditText_d" />
 
     <TextView
-        android:id="@+id/dateRemText"
+        android:id="@+id/dateRemText_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -80,11 +81,11 @@
         android:ems="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.183"
-        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView_d" />
 
 
     <TextView
-        android:id="@+id/timeRemText"
+        android:id="@+id/timeRemText_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -95,11 +96,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.837"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeRemTextView"
+        app:layout_constraintTop_toBottomOf="@+id/timeRemTextView_d"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/timeRemTextView"
+        android:id="@+id/timeRemTextView_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -111,22 +112,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.083"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateRemText" />
+        app:layout_constraintTop_toBottomOf="@+id/dateRemText_d" />
 
     <Button
-        android:id="@+id/submit_btn"
+        android:id="@+id/submit_btn_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Submit"
-        app:layout_constraintTop_toBottomOf="@+id/choiceSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/choiceSpinner_d"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     <TextView
-        android:id="@+id/AmountTextView"
+        android:id="@+id/AmountTextView_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -136,11 +137,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.118"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeRemText" />
+        app:layout_constraintTop_toBottomOf="@+id/timeRemText_d" />
 
 
-        <EditText
-        android:id="@+id/AmountEditText"
+    <EditText
+        android:id="@+id/AmountEditText_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -153,39 +154,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.172"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AmountTextView"
+        app:layout_constraintTop_toBottomOf="@+id/AmountTextView_d"
         app:layout_constraintVertical_bias="0.011" />
 
     <Spinner
-        android:id="@+id/choiceSpinner"
+        android:id="@+id/choiceSpinner_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="28dp"
         android:prompt="@string/choose_currency"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AmountTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/AmountTextView_d" />
 
 
     <Button
-        android:id="@+id/date_button"
+        android:id="@+id/date_button_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
         android:text="Pick date"
-        app:layout_constraintBottom_toBottomOf="@+id/dateRemText"
-        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/dateRemText_d"
+        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView_d"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/time_button"
+        android:id="@+id/time_button_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
         android:text="Pick time"
-        app:layout_constraintTop_toBottomOf="@+id/timeRemTextView"
-        app:layout_constraintBottom_toBottomOf="@+id/timeRemText"
+        app:layout_constraintTop_toBottomOf="@+id/timeRemTextView_d"
+        app:layout_constraintBottom_toBottomOf="@+id/timeRemText_d"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
