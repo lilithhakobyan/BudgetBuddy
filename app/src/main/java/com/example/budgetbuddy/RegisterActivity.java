@@ -25,7 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    TextInputEditText editTextEmail, editTextPassword;
+    TextInputEditText editTextEmail, editTextPassword, username;
     Button buttonReg;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
@@ -38,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.email);
         editTextPassword = findViewById(R.id.password);
+        username = findViewById(R.id.username);
         buttonReg = findViewById(R.id.RegisterButton);
         progressBar = findViewById(R.id.progressBar);
 
@@ -72,11 +73,6 @@ public class RegisterActivity extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     sendEmailVerification();
-                                    Toast.makeText(RegisterActivity.this, "Sign-up successful. Verification email sent.", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                    finish();
                                 } else {
                                     if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                         Toast.makeText(RegisterActivity.this, "The email address is already in use by another account.", Toast.LENGTH_SHORT).show();
@@ -92,6 +88,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void sendEmailVerification() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String usernameText = username.getText().toString().trim(); // Retrieve username
 
         if (user != null) {
             if (!user.isEmailVerified()) {
@@ -101,6 +98,10 @@ public class RegisterActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     Log.d(TAG, "Verification email sent.");
+                                    Intent intent = new Intent(RegisterActivity.this, HomeFragment.class);
+                                    intent.putExtra("USERNAME", usernameText);
+                                    startActivity(intent);
+                                    finish();
                                 } else {
                                     Log.e(TAG, "Failed to send verification email.", task.getException());
 
