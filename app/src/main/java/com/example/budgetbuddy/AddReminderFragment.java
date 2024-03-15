@@ -2,10 +2,14 @@ package com.example.budgetbuddy;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -57,11 +61,16 @@ public class AddReminderFragment extends Fragment {
 
     private List<ReminderClass> reminderList = new ArrayList<>();
 
+    private static final int ALARM_REQUEST_CODE = 123;
+    private Context mContext;
+
     private static final String DATE_TIME_FORMAT = "MM/dd/yyyy HH:mm";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_reminder, container, false);
+
+        mContext = getContext();
 
         describeReminderEditText = view.findViewById(R.id.describeReminderEditText);
         timeRemText = view.findViewById(R.id.timeRemText);
@@ -116,6 +125,7 @@ public class AddReminderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 saveReminderToFirestore();
+
                 openReminderFragment();
             }
         });
@@ -278,6 +288,7 @@ public class AddReminderFragment extends Fragment {
                         Log.w(TAG, "Error adding reminder", task.getException());
                     }
                 });
+        scheduleAlarm(dateTime);
     }
 
     private void clearInputFields() {
@@ -336,4 +347,15 @@ public class AddReminderFragment extends Fragment {
     public interface OnReminderAddedListener {
         void onReminderAdded(ReminderClass newReminder);
     }
+
+    private void scheduleAlarm(long alarmTimeMillis) {
+        AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(mContext, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, ALARM_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE); // Add FLAG_IMMUTABLE
+
+        // Set the alarm
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTimeMillis, pendingIntent);
+    }
+
+
 }

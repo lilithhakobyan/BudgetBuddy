@@ -66,6 +66,7 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:text="Forgot password?"
+                android:clickable="true"
                 android:textSize="14sp"
                 android:id="@+id/forgot_password"
                 android:textColor="@color/black"

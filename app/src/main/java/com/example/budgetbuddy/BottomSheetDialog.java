@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView; // Add this import for ListView
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -85,7 +86,6 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-
                                 document.getReference().delete()
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
@@ -93,15 +93,15 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
                                                 if (deleteTask.isSuccessful()) {
                                                     Toast.makeText(getContext(), "Reminder Deleted Successfully", Toast.LENGTH_LONG).show();
 
-
-                                                    reminderList.clear();
+                                                    // Remove deleted item from the list
+                                                    reminderList.remove(document.getId());
+                                                    // Notify adapter of the dataset change
                                                     reminderAdapter.notifyDataSetChanged();
                                                 } else {
                                                     Toast.makeText(getContext(), "Failed to Delete Reminder!!", Toast.LENGTH_LONG).show();
                                                 }
                                             }
                                         });
-
                                 break;
                             }
                         } else {
@@ -110,4 +110,5 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
                     }
                 });
     }
+
 }
