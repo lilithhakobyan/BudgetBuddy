@@ -1,42 +1,43 @@
 package com.example.budgetbuddy;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 public class ReminderReceiver extends BroadcastReceiver {
-    private static final String CHANNEL_ID = "ReminderChannel";
-    private static final int NOTIFICATION_ID = 123;
+
+    private static final String TAG = "ReminderReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        ReminderClass reminder = (ReminderClass) intent.getSerializableExtra("reminder");
+        // Check if permission is granted
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_BOOT_COMPLETED)
+                == PackageManager.PERMISSION_GRANTED) {
 
-        if (reminder != null) {
-            showNotification(context, "Reminder: " + reminder.getTitle());
-        }
-    }
+            // Retrieve any data passed along with the intent
+            String notificationTitle = intent.getStringExtra("title");
+            String notificationText = intent.getStringExtra("text");
 
-    private void showNotification(Context context, String message) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            // Create notification
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default")
+                    .setSmallIcon(R.drawable.notifications_icon)
+                    .setContentTitle(notificationTitle)
+                    .setContentText(notificationText)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Reminder Channel", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        Notification notification = new Notification.Builder(context, CHANNEL_ID)
-                .setContentTitle("Reminder")
-                .setContentText(message)
-                .setSmallIcon(R.drawable.baseline_notifications_24)
-                .build();
-
-        if (notificationManager != null) {
-            notificationManager.notify(NOTIFICATION_ID, notification);
+            // Show the notification
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+            notificationManager.notify(0, builder.build());
+        } else {
+            Log.e(TAG, "Permission not granted to receive boot completed broadcast");
         }
     }
 }

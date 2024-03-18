@@ -1,4 +1,4 @@
-package com.example.budgetbuddy;
+package com.example.budgetbuddy.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.ReminderClass;
 
 import java.text.SimpleDateFormat;

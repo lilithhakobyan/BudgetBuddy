@@ -2,14 +2,21 @@ package com.example.budgetbuddy;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,21 +30,19 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import com.example.budgetbuddy.R;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,10 +70,21 @@ public class AddReminderFragment extends Fragment {
     private Context mContext;
 
     private static final String DATE_TIME_FORMAT = "MM/dd/yyyy HH:mm";
+    private TimePicker timePicker;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_reminder, container, false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            if (ContextCompat.checkSelfPermission(requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(requireActivity(),
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},101);
+            }
+        }
 
         mContext = getContext();
 
@@ -80,13 +96,11 @@ public class AddReminderFragment extends Fragment {
         dateRemText = view.findViewById(R.id.dateRemText);
         TimeButton = view.findViewById(R.id.time_button);
 
+
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
         FirebaseUser user = auth.getCurrentUser();
-
-
-
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.choices_array, android.R.layout.simple_spinner_item);
@@ -125,7 +139,7 @@ public class AddReminderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 saveReminderToFirestore();
-
+                makeNotification();
                 openReminderFragment();
             }
         });
@@ -168,13 +182,11 @@ public class AddReminderFragment extends Fragment {
                 int month = datePickerDialog.getDatePicker().getMonth() + 1;  // Month is 0-based
                 int day = datePickerDialog.getDatePicker().getDayOfMonth();
 
-
                 String formattedDay = (day < 10) ? "0" + day : String.valueOf(day);
                 String formattedMonth = (month < 10) ? "0" + month : String.valueOf(month);
                 String selectedDate = formattedDay + "/" + formattedMonth + "/" + year;
 
                 dateRemText.setText(selectedDate);
-
             }
         });
 
@@ -205,19 +217,14 @@ public class AddReminderFragment extends Fragment {
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
                 String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
                 timeRemText.setText(selectedTime);
-
-
             }
         }, 15, 30, false);
 
         timePickerDialog.show();
 
-
-
         timePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
 
             }
 
@@ -288,7 +295,11 @@ public class AddReminderFragment extends Fragment {
                         Log.w(TAG, "Error adding reminder", task.getException());
                     }
                 });
-        scheduleAlarm(dateTime);
+
+
+        long alarmTimeMillis = convertStringToTimestamp(dateTimeString);
+
+        scheduleAlarm(alarmTimeMillis);
     }
 
     private void clearInputFields() {
@@ -350,12 +361,40 @@ public class AddReminderFragment extends Fragment {
 
     private void scheduleAlarm(long alarmTimeMillis) {
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(mContext, AlarmReceiver.class);
+        Intent intent = new Intent(mContext, ReminderReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, ALARM_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE); // Add FLAG_IMMUTABLE
 
-        // Set the alarm
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTimeMillis, pendingIntent);
     }
 
+   
+    public void makeNotification(){
+        String chanelID = "CHANNEL_ID_NOTIFICATION";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity().getApplicationContext(),chanelID);
+        builder.setSmallIcon(R.drawable.notifications_icon);
+        builder.setContentTitle("Notification Title");
+        builder.setContentText("AAAAAAAAAA");
+        builder.setAutoCancel(true).setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+        Intent intent = new Intent(getActivity().getApplicationContext(), NotificationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("data","Some value to be passed here");
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(),0,intent,PendingIntent.FLAG_MUTABLE);
+        builder.setContentIntent(pendingIntent);
+        NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(chanelID);
+            if (notificationChannel == null){
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                notificationChannel = new NotificationChannel(chanelID,"Some description",importance);
+                notificationChannel.setLightColor(Color.GREEN);
+                notificationChannel.enableVibration(true);
+                notificationManager.createNotificationChannel(notificationChannel);
+
+            }
+        }
+        notificationManager.notify(0,builder.build());
+    }
 }
