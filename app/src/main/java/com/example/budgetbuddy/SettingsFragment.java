@@ -32,18 +32,9 @@ public class SettingsFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
 
         emailTextView = view.findViewById(R.id.email_text);
-        signOutTextView = view.findViewById(R.id.sign_out);
-        profilePictureTextView = view.findViewById(R.id.add_pr_picture);
-        profilePicture = view.findViewById(R.id.pr_picture);
+        signOutTextView = view.findViewById(R.id.log_out);
 
-        profilePictureTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
-            }
-        });
+
 
         signOutTextView.setOnClickListener(new View.OnClickListener() {
             @Override

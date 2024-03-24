@@ -10,27 +10,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.budgetbuddy.adapter.ReminderAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 
 public class ReminderFragment extends Fragment implements AddReminderFragment.OnReminderAddedListener {
 
-    private FloatingActionButton buttonAdd;
     private ListView listViewTasks;
-    private ArrayList<String> taskList;
-    private ArrayAdapter<String> adapter;
+    private ArrayList<ReminderClass> reminderList;
+    private ReminderAdapter adapter;
 
     private static final String TAG = "ReminderFragment";
 
@@ -39,22 +37,19 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
         View view = inflater.inflate(R.layout.fragment_reminder, container, false);
 
         listViewTasks = view.findViewById(R.id.listViewTasks);
-        taskList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, taskList);
+        reminderList = new ArrayList<>();
+        adapter = new ReminderAdapter(getContext(), R.layout.list_item_layout, reminderList);
         listViewTasks.setAdapter(adapter);
 
         listViewTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedReminder = taskList.get(position);
-                BottomSheetDialog bottomSheetFragment = new BottomSheetDialog();
-                bottomSheetFragment.show(getParentFragmentManager(), bottomSheetFragment.getTag());
+                ReminderClass selectedReminder = reminderList.get(position);
+                openBottomSheetDialog(selectedReminder.getTitle());
             }
         });
 
-        buttonAdd = view.findViewById(R.id.addReminder_button);
-
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.addReminder_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addReminderFragment();
@@ -62,13 +57,23 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
         });
 
         fetchRemindersFromFirestore();
+        retrieveFCMToken();
 
         return view;
     }
 
+    private void openBottomSheetDialog(String selectedReminder) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString("selectedReminder", selectedReminder);
+        bottomSheetDialog.setArguments(bundle);
+        bottomSheetDialog.show(getParentFragmentManager(), bottomSheetDialog.getTag());
+    }
+
     public void onReminderAdded(ReminderClass newReminder) {
-        taskList.add(newReminder.getTitle());
+        reminderList.add(newReminder);
         adapter.notifyDataSetChanged();
+        updateReminder(newReminder);
     }
 
     private void fetchRemindersFromFirestore() {
@@ -81,11 +86,11 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            taskList.clear();
+                            reminderList.clear();
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String reminderTitle = document.getString("title");
-                                taskList.add(reminderTitle);
+                                ReminderClass reminder = document.toObject(ReminderClass.class);
+                                reminderList.add(reminder);
                             }
 
                             adapter.notifyDataSetChanged();
@@ -98,11 +103,10 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
 
     private void addReminderFragment() {
         AddReminderFragment addReminderFragment = new AddReminderFragment();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, addReminderFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, addReminderFragment)
+                .addToBackStack(null)
+                .commit();
 
         Log.d(TAG, "addReminderFragment() called");
     }
@@ -113,10 +117,24 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
         intent.putExtra("reminder", updatedReminder);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
         if (alarmManager != null) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, updatedReminder.getDateTime(), pendingIntent);
+            Log.d(TAG, "Reminder alarm set for: " + updatedReminder.getDateTime());
+        } else {
+            Log.e(TAG, "Failed to get AlarmManager");
         }
     }
 
+    private void retrieveFCMToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        String token = task.getResult();
+                        Log.d(TAG, "FCM Token: " + token);
+                        // Save the token or use it as needed
+                    } else {
+                        Log.w(TAG, "Fetching FCM token failed", task.getException());
+                    }
+                });
+    }
 }

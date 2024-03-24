@@ -22,7 +22,7 @@ public class CategoryFragment extends Fragment {
     private ListView categoryListView;
     private String[] categoryNames = {"Salary", "Category 2", "Category 3"};
     private int[] categoryIcons = {R.drawable.salary, R.drawable.select_icon, R.drawable.img};
-    private int selectedItemPosition = -1; // Track the currently selected item position
+    private int selectedItemPosition = -1;
 
     @Nullable
     @Override
@@ -31,7 +31,6 @@ public class CategoryFragment extends Fragment {
 
         categoryListView = view.findViewById(R.id.category_list);
 
-        // Create custom adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.category_list, categoryNames) {
             @NonNull
             @Override
@@ -59,7 +58,6 @@ public class CategoryFragment extends Fragment {
 
         categoryListView.setAdapter(adapter);
 
-        // Add OnItemClickListener to the ListView
         categoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -78,9 +76,8 @@ public class CategoryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (selectedItemPosition != -1) {
-                    // If a category is selected
+
                     String selectedCategory = categoryNames[selectedItemPosition];
-                    // Notify the listener (parent fragment) about the selected category
                     if (getParentFragment() instanceof OnCategorySelectedListener) {
                         ((OnCategorySelectedListener) getParentFragment()).onCategorySelected(selectedCategory);
                     }
@@ -92,7 +89,6 @@ public class CategoryFragment extends Fragment {
         return view;
     }
 
-    // Define an interface to communicate with the parent fragment
     public interface OnCategorySelectedListener {
         void onCategorySelected(String categoryName);
     }

@@ -1,47 +1,38 @@
 package com.example.budgetbuddy;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.os.Bundle;
-import com.google.firebase.firestore.QuerySnapshot;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView; // Add this import for ListView
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class BottomSheetDialog extends BottomSheetDialogFragment {
 
     private static final String TAG = "BottomSheetDialog";
     private FirebaseFirestore firestore;
-    private FirebaseAuth mAuth;
-    private ArrayAdapter<String> reminderAdapter;
-    private List<String> reminderList = new ArrayList<>();
+    private String selectedReminderId;
 
     public BottomSheetDialog() {
+        // Required empty public constructor
+    }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            selectedReminderId = getArguments().getString("selectedReminderId");
+        }
     }
 
     @Override
@@ -49,20 +40,20 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.bottom_sheet_dialog, container, false);
 
         firestore = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
 
-        LinearLayout makeChangesLayout = view.findViewById(R.id.make_changes_layout);
         LinearLayout deleteReminderLayout = view.findViewById(R.id.delete_reminder_layout);
-        ImageView Close = view.findViewById(R.id.close_bottom_sheet_dialog);
+
+        ImageView close = view.findViewById(R.id.close_bottom_sheet_dialog);
 
         deleteReminderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteReminder();
+                deleteReminder(selectedReminderId);
+                dismiss();
             }
         });
 
-        Close.setOnClickListener(new View.OnClickListener() {
+        close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
@@ -72,43 +63,24 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
         return view;
     }
 
-    private void deleteReminder() {
+    private void deleteReminder(String reminderId) {
         if (firestore == null) {
             firestore = FirebaseFirestore.getInstance();
         }
 
-        CollectionReference remindersCollection = firestore.collection("reminders");
-
-        remindersCollection.limit(1)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        if (!TextUtils.isEmpty(reminderId)) {
+            firestore.collection("reminders").document(reminderId)
+                    .delete()
+                    .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                document.getReference().delete()
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> deleteTask) {
-                                                if (deleteTask.isSuccessful()) {
-                                                    Toast.makeText(getContext(), "Reminder Deleted Successfully", Toast.LENGTH_LONG).show();
-
-                                                    // Remove deleted item from the list
-                                                    reminderList.remove(document.getId());
-                                                    // Notify adapter of the dataset change
-                                                    reminderAdapter.notifyDataSetChanged();
-                                                } else {
-                                                    Toast.makeText(getContext(), "Failed to Delete Reminder!!", Toast.LENGTH_LONG).show();
-                                                }
-                                            }
-                                        });
-                                break;
-                            }
+                            Toast.makeText(getContext(), "Reminder Deleted Successfully", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getContext(), "Error getting reminders", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Failed to Delete Reminder!!", Toast.LENGTH_LONG).show();
+                            Log.e(TAG, "Error deleting reminder", task.getException());
                         }
-                    }
-                });
+                    });
+        } else {
+            Log.e(TAG, "Invalid reminder ID");
+        }
     }
-
 }

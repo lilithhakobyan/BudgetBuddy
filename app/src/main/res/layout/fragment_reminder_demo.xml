@@ -1,38 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextView
-        android:id="@+id/rem_text_demo"
+        android:id="@+id/rem_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="Reminders"
         android:textSize="20dp"
-        android:textStyle="bold"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"/>
-    <ListView
-        android:id="@+id/listViewTasks"
-        android:layout_below="@+id/rem_text_demo"
-        android:layout_marginStart="20dp"
+        android:textStyle="bold" />
+
+
+    <RelativeLayout
+        android:id="@+id/demo_reminder_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:layout_below="@id/rem_text"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/main">
 
+        <TextView
+            android:id="@+id/demo_reminder_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Demo Reminder"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/demo_reminder_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/demo_reminder_title"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="This is a demo reminder."
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/listViewTasks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/demo_reminder_item"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addReminder_button_demo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:src="@drawable/add"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="40dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="20dp"
-        />
+        android:layout_marginBottom="40dp"
+        android:padding="20dp"
+        android:src="@drawable/add" />
 
 </RelativeLayout>

@@ -8,57 +8,56 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.ReminderClass;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class ReminderAdapter extends ArrayAdapter<ReminderClass> {
 
+    private List<ReminderClass> reminderList;
     private Context context;
-    private int resource;
 
-    public ReminderAdapter(Context context, int resource, List<ReminderClass> reminders) {
-        super(context, resource, reminders);
+    public ReminderAdapter(@NonNull Context context, int resource, @NonNull List<ReminderClass> objects) {
+        super(context, resource, objects);
         this.context = context;
-        this.resource = resource;
-    }
-
-    private static class ViewHolder {
-        TextView titleTextView;
-        TextView dateTimeTextView;
+        this.reminderList = objects;
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        ViewHolder holder;
-
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(resource, parent, false);
-
-            holder = new ViewHolder();
-            holder.titleTextView = convertView.findViewById(R.id.describeReminderTextView);
-            holder.dateTimeTextView = convertView.findViewById(R.id.dateRemText);
-
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_layout, parent, false);
         }
 
-        ReminderClass currentReminder = getItem(position);
+        final ReminderClass reminder = getItem(position);
 
-        if (currentReminder != null) {
-            holder.titleTextView.setText(currentReminder.getTitle());
+        TextView textTitle = convertView.findViewById(R.id.textTitle);
+        TextView textDate = convertView.findViewById(R.id.textDate);
+        TextView textTime = convertView.findViewById(R.id.textTime);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-            String formattedDateTime = sdf.format(currentReminder.getDateTime());
-            holder.dateTimeTextView.setText(formattedDateTime);
+        if (reminder != null) {
+            textTitle.setText(reminder.getTitle());
+            textDate.setText(formatDate(reminder.getDateTime()));
+            textTime.setText(formatTime(reminder.getDateTime()));
         }
 
         return convertView;
+    }
+
+    private String formatDate(long dateTime) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
+        return dateFormat.format(new Date(dateTime));
+    }
+
+    private String formatTime(long dateTime) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        return timeFormat.format(new Date(dateTime));
     }
 }

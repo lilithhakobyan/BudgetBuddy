@@ -98,7 +98,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:hint="Title"
+        android:hint="Amount"
+        android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/amount_text"/>
@@ -118,7 +119,7 @@
         android:id="@+id/frequency_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Repeat Frequency"
+        android:text="Adding Frequency"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/currency_spinner"
         app:layout_constraintStart_toStartOf="parent"
