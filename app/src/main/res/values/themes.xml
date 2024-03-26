@@ -14,7 +14,7 @@
     </style>
 
     <style name="DialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
-        <item name="colorAccent">@color/purple</item>
+        <item name="colorAccent">@color/dark_blue</item>
     </style>
 
 

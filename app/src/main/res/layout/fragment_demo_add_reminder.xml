@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="20dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="text"
@@ -119,6 +119,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/dark_blue"
         android:text="Submit"
         app:layout_constraintTop_toBottomOf="@+id/choiceSpinner_d"
         app:layout_constraintEnd_toEndOf="parent"
@@ -173,10 +174,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
+        android:backgroundTint="@color/dark_blue"
         android:text="Pick date"
         app:layout_constraintBottom_toBottomOf="@+id/dateRemText_d"
-        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView_d"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView_d"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
@@ -184,6 +186,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
+        android:backgroundTint="@color/dark_blue"
         android:text="Pick time"
         app:layout_constraintTop_toBottomOf="@+id/timeRemTextView_d"
         app:layout_constraintBottom_toBottomOf="@+id/timeRemText_d"

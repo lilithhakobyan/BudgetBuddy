@@ -8,27 +8,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.budgetbuddy.R;
+import com.example.budgetbuddy.adapter.CategoryAdapter;
 
 public class AddIncomeFragment extends Fragment {
 
+    private TextView selectCategoryTextView;
+    private ImageView selectIconButton;
     private TextView incomeCategoryTextView;
+    private ImageView incomeCategoryIconView;
+
+    private String selectedCategoryName;
+    private int selectedCategoryIcon;
 
     public AddIncomeFragment() {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add_income, container, false);
-        return view;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_add_income, container, false);
     }
 
     @Override
@@ -37,6 +43,11 @@ public class AddIncomeFragment extends Fragment {
 
         LinearLayout incomeCategoryLayout = view.findViewById(R.id.income_category);
         incomeCategoryTextView = view.findViewById(R.id.category_name);
+        incomeCategoryIconView = view.findViewById(R.id.category_icon);
+        selectCategoryTextView = view.findViewById(R.id.select_category);
+        selectIconButton = view.findViewById(R.id.select_icon);
+
+
 
         incomeCategoryLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,8 +79,5 @@ public class AddIncomeFragment extends Fragment {
                 dialog.show();
             }
         });
-    }
-    public void updateCategory(String categoryName) {
-        incomeCategoryTextView.setText(categoryName);
     }
 }

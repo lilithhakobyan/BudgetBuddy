@@ -191,7 +191,6 @@ public class AddReminderFragment extends Fragment {
         alertDialog.show();
     }
 
-    // Method to navigate back to ReminderFragment
     private void openReminderFragment() {
         ReminderFragment fragmentB = new ReminderFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -205,7 +204,6 @@ public class AddReminderFragment extends Fragment {
         transaction.commit();
     }
 
-    // Method to convert string date/time to timestamp
     private long convertStringToTimestamp(String dateTimeString) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
         try {
@@ -325,11 +323,10 @@ public class AddReminderFragment extends Fragment {
             return;
         }
 
-        // Create an intent for the ReminderReceiver and add the reminder message as an extra
-        Intent intent = new Intent(requireContext(), ReminderReceiver.class);
-        intent.putExtra("REMINDER_MESSAGE", describeReminderEditText.getText().toString()); // Add the reminder message as an extra
 
-        // Create a PendingIntent to be broadcasted when the alarm triggers
+        Intent intent = new Intent(requireContext(), ReminderReceiver.class);
+        intent.putExtra("REMINDER_MESSAGE", describeReminderEditText.getText().toString());
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 requireContext(),
                 ALARM_REQUEST_CODE,
@@ -337,7 +334,7 @@ public class AddReminderFragment extends Fragment {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        // Schedule the alarm to trigger at the specified timestamp
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timestamp, pendingIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

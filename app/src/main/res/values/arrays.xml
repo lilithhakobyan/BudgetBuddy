@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="budget_buddy">Choose</string>
     <string-array name="choices_array">
 
         <item>USD - United States Dollar</item>

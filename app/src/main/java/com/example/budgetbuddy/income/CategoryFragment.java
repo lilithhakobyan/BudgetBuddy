@@ -1,28 +1,41 @@
 package com.example.budgetbuddy.income;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import android.graphics.Color;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.budgetbuddy.R;
+import com.example.budgetbuddy.adapter.CategoryAdapter;
 
 public class CategoryFragment extends Fragment {
 
+    private GridView gridView;
+    private CategoryAdapter categoryAdapter;
+
     private ListView categoryListView;
+    private ImageView close;
+    private Button okButton;
+
     private String[] categoryNames = {"Salary", "Category 2", "Category 3"};
     private int[] categoryIcons = {R.drawable.salary, R.drawable.select_icon, R.drawable.img};
     private int selectedItemPosition = -1;
+    private OnCategorySelectedListener categorySelectedListener;
 
     @Nullable
     @Override
@@ -30,6 +43,8 @@ public class CategoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_category, container, false);
 
         categoryListView = view.findViewById(R.id.category_list);
+        close = view.findViewById(R.id.close_category);
+        okButton = view.findViewById(R.id.button_ok);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.category_list, categoryNames) {
             @NonNull
@@ -45,11 +60,11 @@ public class CategoryFragment extends Fragment {
                 iconImageView.setImageResource(categoryIcons[position]);
                 nameTextView.setText(categoryNames[position]);
 
-                // Highlight the selected item
+
                 if (position == selectedItemPosition) {
-                    convertView.setBackgroundColor(0x99CCCCCC); // Set the transparent color using hex value (default is 60% transparent)
+                    convertView.setBackgroundColor(0x99CCCCCC);
                 } else {
-                    convertView.setBackgroundColor(android.R.color.transparent); // Set the background color to transparent
+                    convertView.setBackgroundColor(Color.TRANSPARENT);
                 }
 
                 return convertView;
@@ -59,38 +74,50 @@ public class CategoryFragment extends Fragment {
         categoryListView.setAdapter(adapter);
 
         categoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Update the selected item position
                 selectedItemPosition = position;
-                // Update the ListView to reflect the selected item
                 adapter.notifyDataSetChanged();
-                // Handle item selection here
+
                 String selectedCategory = categoryNames[position];
-                // Optionally, you can perform any action based on the selected category here
+                int selectedIcon = categoryIcons[position]; // Get the corresponding icon
+
+                if (categorySelectedListener != null) {
+                    categorySelectedListener.onCategorySelected(selectedCategory, selectedIcon); // Pass both the category name and icon
+                }
             }
         });
 
-        Button okButton = view.findViewById(R.id.button_ok);
+
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getParentFragmentManager() != null) {
+                    getParentFragmentManager().popBackStack();
+                }
+            }
+        });
+
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (selectedItemPosition != -1) {
-
                     String selectedCategory = categoryNames[selectedItemPosition];
+                    int selectedIcon = categoryIcons[selectedItemPosition];
+                    Log.d("CategoryFragment", "Selected category: " + selectedCategory);
                     if (getParentFragment() instanceof OnCategorySelectedListener) {
-                        ((OnCategorySelectedListener) getParentFragment()).onCategorySelected(selectedCategory);
+                        ((OnCategorySelectedListener) getParentFragment()).onCategorySelected(selectedCategory, selectedIcon);
                     }
+                    getParentFragmentManager().popBackStack();
                 }
-
             }
         });
+
 
         return view;
     }
 
     public interface OnCategorySelectedListener {
-        void onCategorySelected(String categoryName);
+        void onCategorySelected(String categoryName, int categoryIcon);
     }
-
 }

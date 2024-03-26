@@ -131,7 +131,6 @@ public class ReminderFragment extends Fragment implements AddReminderFragment.On
                     if (task.isSuccessful() && task.getResult() != null) {
                         String token = task.getResult();
                         Log.d(TAG, "FCM Token: " + token);
-                        // Save the token or use it as needed
                     } else {
                         Log.w(TAG, "Fetching FCM token failed", task.getException());
                     }

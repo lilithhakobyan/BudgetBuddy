@@ -29,6 +29,12 @@ public class DemoActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
 
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container_demo, new DemoHomeFragment())
+                    .commit();
+        }
+
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -36,7 +42,7 @@ public class DemoActivity extends AppCompatActivity {
                 int itemId = item.getItemId();
 
                 if (itemId == R.id.nav_home){
-                    loadFragment(new HomeFragment(), false);
+                    loadFragment(new DemoHomeFragment(), false);
                 } else if(itemId == R.id.nav_statistics ){
                     loadFragment(new StatisticsFragment(), false);
                 } else if(itemId == R.id.nav_reminder){

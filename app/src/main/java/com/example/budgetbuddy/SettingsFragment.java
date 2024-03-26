@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
 public class SettingsFragment extends Fragment {
 
     private static final int RESULT_LOAD_IMG = 1;
