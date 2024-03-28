@@ -35,7 +35,7 @@ public class DemoHomeFragment extends Fragment {
         String[] items = {"Car", "Salary", "Travelling"};
         String[] descriptions = {"Expense", "Income", "Expense"};
         int[] icons = {R.drawable.baseline_account_balance_wallet_24, R.drawable.money, R.drawable.baseline_account_balance_wallet_24};
-        String[] amount = {"- 50,000 USD", "+ 4000 USD" , "- 1000 AMD"};
+        String[] amount = {"- 50,000 USD", "+ 4000 USD" , "- 1000 USD"};
 
         List<ListItem> itemList = new ArrayList<>();
         for (int i = 0; i < items.length; i++) {

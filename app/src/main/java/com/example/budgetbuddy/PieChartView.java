@@ -28,7 +28,7 @@ public class PieChartView extends View {
     public void setData(float income, float expense) {
         this.income = income;
         this.expense = expense;
-        invalidate(); // Redraw the view with new data
+        invalidate();
     }
 
     @Override
@@ -41,10 +41,10 @@ public class PieChartView extends View {
 
         rectF.set(100, 100, getWidth() - 100, getHeight() - 100);
 
-        paint.setColor(Color.GREEN); // Income color
+        paint.setColor(Color.GREEN);
         canvas.drawArc(rectF, 0, incomeAngle, true, paint);
 
-        paint.setColor(Color.RED); // Expense color
+        paint.setColor(Color.RED);
         canvas.drawArc(rectF, incomeAngle, expenseAngle, true, paint);
     }
 }

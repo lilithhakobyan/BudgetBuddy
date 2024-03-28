@@ -44,7 +44,7 @@ public class DemoActivity extends AppCompatActivity {
                 if (itemId == R.id.nav_home){
                     loadFragment(new DemoHomeFragment(), false);
                 } else if(itemId == R.id.nav_statistics ){
-                    loadFragment(new StatisticsFragment(), false);
+                    loadFragment(new DemoStatisticsFragment(), false);
                 } else if(itemId == R.id.nav_reminder){
                     loadFragment(new DemoReminderFragment(), false);
                 } else {

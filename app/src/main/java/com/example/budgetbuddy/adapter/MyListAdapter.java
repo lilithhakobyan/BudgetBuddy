@@ -32,11 +32,13 @@ public class MyListAdapter extends ArrayAdapter<ListItem> {
         ListItem item = getItem(position);
         TextView titleTextView = convertView.findViewById(R.id.titleTextView);
         TextView descriptionTextView = convertView.findViewById(R.id.descriptionTextView);
-        ImageView iconImageView = convertView.findViewById(R.id.iconImageView); // Add ImageView for icon
+        TextView amountTextView = convertView.findViewById(R.id.amount_d);
+        ImageView iconImageView = convertView.findViewById(R.id.iconImageView);
 
         if (item != null) {
             titleTextView.setText(item.getTitle());
             descriptionTextView.setText(item.getDescription());
+            amountTextView.setText(item.getAmount()); // Set the amount text
             iconImageView.setImageResource(item.getIcon());
         }
 

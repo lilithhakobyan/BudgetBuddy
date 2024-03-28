@@ -20,15 +20,8 @@ public class DemoStatisticsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_statistics, container, false);
+        View view = inflater.inflate(R.layout.fragment_demo_statistics, container, false);
 
-
-        PieChartView pieChartView = view.findViewById(R.id.pieChartView);
-
-        // Set the data for the pie chart
-        float income = 500; // Example income value
-        float expense = 300; // Example expense value
-        pieChartView.setData(income, expense);
 
         return view;
     }
