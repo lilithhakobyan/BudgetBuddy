@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/dark_blue">
 
     <ImageView
         android:id="@+id/close_addrem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="16dp"
         android:contentDescription="@string/closebutton"
         android:padding="5dp"
@@ -25,8 +25,8 @@
         android:layout_marginTop="16dp"
         android:text="ADD REMINDER"
         android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/close_addrem" />
 
     <TextView
@@ -35,25 +35,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="What do you want to be reminded of?"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ReminderAddTextView" />
 
     <EditText
         android:id="@+id/describeReminderEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="text"
         android:text="Reminder"
-        app:layout_constraintTop_toBottomOf="@+id/describeReminderTextView"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/dateRemTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/dateRemTextView" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/describeReminderTextView" />
 
     <TextView
         android:id="@+id/dateRemTextView"
@@ -102,11 +102,11 @@
         android:id="@+id/timeRemTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="28dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.083"
@@ -118,11 +118,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/dark_blue"
         android:text="Submit"
-        app:layout_constraintTop_toBottomOf="@+id/choiceSpinner"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/choiceSpinner" />
 
 
     <TextView
@@ -139,7 +140,7 @@
         app:layout_constraintTop_toBottomOf="@+id/timeRemText" />
 
 
-        <EditText
+    <EditText
         android:id="@+id/AmountEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -172,10 +173,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
+        android:backgroundTint="@color/dark_blue"
         android:text="Pick date"
         app:layout_constraintBottom_toBottomOf="@+id/dateRemText"
-        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateRemTextView"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
@@ -183,9 +185,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
+        android:backgroundTint="@color/dark_blue"
         android:text="Pick time"
-        app:layout_constraintTop_toBottomOf="@+id/timeRemTextView"
         app:layout_constraintBottom_toBottomOf="@+id/timeRemText"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeRemTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

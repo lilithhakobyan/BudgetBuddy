@@ -27,7 +27,6 @@ public class CategoryFragment extends Fragment implements AddIncomeFragment.Cate
     private ImageView close;
     private Button saveButton;
 
-    // Define category names and icons directly in the class
     private String[] categoryNames = {"Salary", "Other"};
     private int[] categoryIcons = {R.drawable.salary, R.drawable.select_icon};
     private int selectedItemPosition = -1;
@@ -89,7 +88,6 @@ public class CategoryFragment extends Fragment implements AddIncomeFragment.Cate
                     int selectedIcon = categoryIcons[selectedItemPosition];
                     Log.d("CategoryFragment", "Selected category: " + selectedCategory);
 
-                    // Call the listener interface method to pass data to AddIncomeFragment
                     onCategorySelected(selectedCategory, selectedIcon);
 
                     getParentFragmentManager().popBackStack();

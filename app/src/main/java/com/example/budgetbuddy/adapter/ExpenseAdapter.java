@@ -11,17 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.budgetbuddy.R;
-import com.example.budgetbuddy.income.Income;
+import com.example.budgetbuddy.expense.Expense;
 
 import java.util.List;
 
-public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeViewHolder> {
+public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
-    private List<Income> incomeList;
+    private List<Expense> expenseList;
     private OnDeleteClickListener deleteClickListener;
 
-    public IncomeAdapter(List<Income> incomeList) {
-        this.incomeList = incomeList;
+    public ExpenseAdapter(List<Expense> expenseList) {
+        this.expenseList = expenseList;
     }
 
     public void setOnDeleteClickListener(OnDeleteClickListener listener) {
@@ -30,34 +30,34 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
 
     @NonNull
     @Override
-    public IncomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_income, parent, false);
-        return new IncomeViewHolder(view);
+    public ExpenseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_expense, parent, false);
+        return new ExpenseViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull IncomeViewHolder holder, int position) {
-        Income income = incomeList.get(position);
-        holder.bind(income);
+    public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
+        Expense expense = expenseList.get(position);
+        holder.bind(expense);
     }
 
     @Override
     public int getItemCount() {
-        return incomeList.size();
+        return expenseList.size();
     }
 
-    public class IncomeViewHolder extends RecyclerView.ViewHolder {
+    public class ExpenseViewHolder extends RecyclerView.ViewHolder {
         private TextView categoryTextView;
         private TextView amountTextView;
         private TextView descriptionTextView;
         private ImageView delete;
 
-        public IncomeViewHolder(@NonNull View itemView) {
+        public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
             categoryTextView = itemView.findViewById(R.id.category_text_view);
             amountTextView = itemView.findViewById(R.id.amount_text_view);
             descriptionTextView = itemView.findViewById(R.id.description_text_view);
-            delete = itemView.findViewById(R.id.delete_income);
+            delete = itemView.findViewById(R.id.delete_expense);
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -72,10 +72,10 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
             });
         }
 
-        public void bind(Income income) {
-            categoryTextView.setText(income.getCategory());
-            amountTextView.setText(String.valueOf(income.getAmount()));
-            descriptionTextView.setText(income.getDescription());
+        public void bind(Expense expense) {
+            categoryTextView.setText(expense.getCategory());
+            amountTextView.setText(String.valueOf(expense.getAmount()));
+            descriptionTextView.setText(expense.getDescription());
         }
     }
 

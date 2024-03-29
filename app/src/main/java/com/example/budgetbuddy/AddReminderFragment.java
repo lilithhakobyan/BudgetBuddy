@@ -80,13 +80,13 @@ public class AddReminderFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // Set up spinner
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.choices_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         choiceSpinner.setAdapter(adapter);
 
-        // Set onClickListeners
+
         DateButton.setOnClickListener(v -> openDatePicker());
         TimeButton.setOnClickListener(v -> openTimePicker());
         choiceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -103,9 +103,9 @@ public class AddReminderFragment extends Fragment {
 
         Button submitButton = view.findViewById(R.id.submit_btn);
         submitButton.setOnClickListener(v -> {
-            long timestamp = saveReminderToFirestore(); // Save reminder and get timestamp
+            long timestamp = saveReminderToFirestore();
             if (timestamp != 0) {
-                scheduleReminder(timestamp); // Schedule the reminder
+                scheduleReminder(timestamp);
                 openReminderFragment();
             } else {
                 // Handle error case where timestamp couldn't be generated
@@ -143,10 +143,8 @@ public class AddReminderFragment extends Fragment {
 
         boolean settled = false;
 
-        // Create ReminderClass object
         ReminderClass newReminder = new ReminderClass(reminderTitle, dateTime, amountText, selectedChoice, settled);
 
-        // Save to Firestore
         Map<String, Object> reminderData = new HashMap<>();
         reminderData.put("title", reminderTitle);
         reminderData.put("date", dateText);

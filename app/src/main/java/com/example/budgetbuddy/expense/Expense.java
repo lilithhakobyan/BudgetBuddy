@@ -1,16 +1,17 @@
-package com.example.budgetbuddy.income;
+package com.example.budgetbuddy.expense;
 
-public class Income {
+public class Expense {
     private String id;
     private double amount;
     private String category;
     private String description;
     private String currency;
-    public Income() {
+    public Expense() {
 
     }
 
-    public Income(double amount, String category, String description, String currency) {
+
+    public Expense(double amount, String category, String description, String currency) {
         this.amount = amount;
         this.category = category;
         this.description = description;
@@ -18,6 +19,13 @@ public class Income {
     }
 
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public double getAmount() {
         return amount;
@@ -41,14 +49,6 @@ public class Income {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getCurrency() {

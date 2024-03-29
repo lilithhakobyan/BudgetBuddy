@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.budgetbuddy.expense.ExpenseFragment;
 import com.example.budgetbuddy.income.IncomeFragment;
 
 public class HomeFragment extends Fragment {

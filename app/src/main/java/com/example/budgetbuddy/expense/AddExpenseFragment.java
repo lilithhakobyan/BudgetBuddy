@@ -1,4 +1,4 @@
-package com.example.budgetbuddy.income;
+package com.example.budgetbuddy.expense;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,7 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddIncomeFragment extends Fragment {
+public class AddExpenseFragment extends Fragment {
 
     public interface CategorySelectionListener {
         void onCategorySelected(String categoryName, int categoryIcon);
@@ -37,7 +37,7 @@ public class AddIncomeFragment extends Fragment {
 
     private TextView selectCategoryTextView;
     private ImageView selectIconButton;
-    private IncomeCategory selectedCategory;
+    private ExpenseCategory selectedCategory;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private EditText descEditText;
@@ -46,7 +46,7 @@ public class AddIncomeFragment extends Fragment {
     private Button save;
     private ImageView close;
 
-    public AddIncomeFragment() {
+    public AddExpenseFragment() {
 
     }
 
@@ -59,7 +59,7 @@ public class AddIncomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add_income, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_expense, container, false);
 
         Spinner spinner = view.findViewById(R.id.currency_spinner);
 
@@ -94,14 +94,14 @@ public class AddIncomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        LinearLayout incomeCategoryLayout = view.findViewById(R.id.income_category);
+        LinearLayout expenseCategoryLayout = view.findViewById(R.id.expense_category);
         selectCategoryTextView = view.findViewById(R.id.select_category);
         selectIconButton = view.findViewById(R.id.select_icon);
-        save = view.findViewById(R.id.button);
+        save = view.findViewById(R.id.button_save_expense);
         descEditText = view.findViewById(R.id.desc_edit_text);
         amountEditText = view.findViewById(R.id.amount_edit_text);
         TextView amountTextView = view.findViewById(R.id.amount_text_view);
-        close = view.findViewById(R.id.close_income);
+        close = view.findViewById(R.id.close_expense);
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +125,7 @@ public class AddIncomeFragment extends Fragment {
             }
         });
 
-        incomeCategoryLayout.setOnClickListener(new View.OnClickListener() {
+        expenseCategoryLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCategoryDialog();
@@ -135,7 +135,7 @@ public class AddIncomeFragment extends Fragment {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveIncome();
+                saveExpense();
                 getParentFragmentManager().popBackStack();
             }
         });
@@ -147,7 +147,7 @@ public class AddIncomeFragment extends Fragment {
                 .setItems(getCategoryNamesArray(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        selectedCategory = IncomeCategory.values()[which];
+                        selectedCategory = ExpenseCategory.values()[which];
                         updateSelectedCategory(selectedCategory.getCategoryName(), selectedCategory.getCategoryIcon());
                     }
                 })
@@ -157,9 +157,9 @@ public class AddIncomeFragment extends Fragment {
     }
 
     private String[] getCategoryNamesArray() {
-        String[] categoryNames = new String[IncomeCategory.values().length];
-        for (int i = 0; i < IncomeCategory.values().length; i++) {
-            categoryNames[i] = IncomeCategory.values()[i].getCategoryName();
+        String[] categoryNames = new String[ExpenseCategory.values().length];
+        for (int i = 0; i < ExpenseCategory.values().length; i++) {
+            categoryNames[i] = ExpenseCategory.values()[i].getCategoryName();
         }
         return categoryNames;
     }
@@ -169,7 +169,7 @@ public class AddIncomeFragment extends Fragment {
         selectIconButton.setImageResource(categoryIcon);
     }
 
-    private void saveIncome() {
+    private void saveExpense() {
         String amountStr = amountEditText.getText().toString().trim();
         String description = descEditText.getText().toString().trim();
 
@@ -198,21 +198,22 @@ public class AddIncomeFragment extends Fragment {
 
         double amount = Double.parseDouble(amountStr);
 
-        Income income = new Income(amount, selectedCategory.getCategoryName(), description, selectedCurrency);
-        db.collection("income")
-                .add(income)
+        Expense expense = new Expense(amount, selectedCategory.getCategoryName(), description, selectedCurrency);
+        db.collection("expense")
+                .add(expense)
                 .addOnSuccessListener(documentReference -> {
+                    Log.i("AddExpenseFragment", "Expense saved successfully");
                     if (getActivity() != null) {
-                        Toast.makeText(getActivity(), "Income saved successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Expense saved successfully", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
+                    String errorMessage = "Failed to save expense: " + e.getMessage();
+                    Log.e("AddExpenseFragment", errorMessage, e);
                     if (getActivity() != null) {
-                        Toast.makeText(getActivity(), "Failed to save income: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
                     }
                 });
+
     }
-
-
-
 }
