@@ -9,11 +9,8 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.budgetbuddy.HomeFragment;
 import com.example.budgetbuddy.R;
-import com.example.budgetbuddy.ReminderFragment;
 import com.example.budgetbuddy.SettingsFragment;
-import com.example.budgetbuddy.StatisticsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class DemoActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package com.example.budgetbuddy;
+package com.example.budgetbuddy.reminder;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -31,6 +31,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.budgetbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;

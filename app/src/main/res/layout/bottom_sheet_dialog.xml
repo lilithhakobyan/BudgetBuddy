@@ -66,11 +66,11 @@
             android:id="@+id/textViewDeleteReminder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text = "Delete reminder"
+            android:text="Delete reminder"
             android:layout_marginLeft="30dp"
-            android:textSize = "16dp"/>
-
-
+            android:textSize="16dp"/>
     </LinearLayout>
+
+
 
 </LinearLayout>

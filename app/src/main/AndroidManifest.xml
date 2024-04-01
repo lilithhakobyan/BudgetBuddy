@@ -38,7 +38,7 @@
             android:exported="false" />
 
         <receiver
-            android:name=".ReminderReceiver"
+            android:name=".reminder.ReminderReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

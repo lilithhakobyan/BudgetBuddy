@@ -1,4 +1,4 @@
-package com.example.budgetbuddy;
+package com.example.budgetbuddy.reminder;
 
 import java.io.Serializable;
 
@@ -11,6 +11,7 @@ public class ReminderClass implements Serializable {
     private boolean settled;
 
     private String uniqueId;
+    private String documentId;
 
     public ReminderClass() {
     }
@@ -24,7 +25,17 @@ public class ReminderClass implements Serializable {
 
         // Generate unique ID based on title and timestamp
         this.uniqueId = generateUniqueId(title, dateTime);
+        this.documentId = "";
     }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
 
     private String generateUniqueId(String title, long dateTime) {
         return title + "_" + dateTime;

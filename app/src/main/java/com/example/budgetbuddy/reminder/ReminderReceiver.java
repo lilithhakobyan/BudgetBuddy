@@ -1,6 +1,5 @@
-package com.example.budgetbuddy;
+package com.example.budgetbuddy.reminder;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,38 +15,35 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.budgetbuddy.NotificationActivity;
+import com.example.budgetbuddy.R;
+
 public class ReminderReceiver extends BroadcastReceiver {
     private static final String TAG = "ReminderReceiver";
-    private static final int NOTIFICATION_ID = 123; // Arbitrary notification ID
-    private static final String CHANNEL_ID = "reminder_channel"; // Notification channel ID
-    private static final CharSequence CHANNEL_NAME = "Reminder Channel"; // Notification channel name
+    private static final int NOTIFICATION_ID = 123;
+    private static final String CHANNEL_ID = "reminder_channel";
+    private static final CharSequence CHANNEL_NAME = "Reminder Channel";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Reminder received.");
 
-        String message = intent.getStringExtra("REMINDER_MESSAGE"); // Corrected key
+        String message = intent.getStringExtra("REMINDER_MESSAGE");
         if (message != null) {
             Log.d(TAG, "Received message: " + message);
 
-            // Show a toast with the received message
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
-            // Create an explicit intent for the NotificationActivity
             Intent notificationIntent = new Intent(context, NotificationActivity.class);
             notificationIntent.putExtra("data", message);
 
-            // Create a PendingIntent with mutability flag
             PendingIntent pendingIntent = PendingIntent.getActivity(
                     context,
                     NOTIFICATION_ID,
                     notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE // or PendingIntent.FLAG_MUTABLE
+                    PendingIntent.FLAG_IMMUTABLE
             );
 
-            // Set sound for the notification
-            // Specify the URI of the custom sound file
-            // Get the URI of the default notification sound
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -59,8 +55,7 @@ public class ReminderReceiver extends BroadcastReceiver {
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri);
 
-
-
+            // Create the notification channel for Android Oreo and higher
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel channel = new NotificationChannel(
                         CHANNEL_ID,
