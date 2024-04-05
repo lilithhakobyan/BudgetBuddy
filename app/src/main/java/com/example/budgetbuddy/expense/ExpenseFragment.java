@@ -9,12 +9,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.budgetbuddy.OnSwipeToDeleteListener;
 import com.example.budgetbuddy.R;
+import com.example.budgetbuddy.SharedViewModel;
+import com.example.budgetbuddy.SwipeToDeleteCallback;
 import com.example.budgetbuddy.adapter.ExpenseAdapter;
-import com.example.budgetbuddy.expense.Expense;
+import com.example.budgetbuddy.income.Income;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -24,12 +29,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDeleteClickListener {
+public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDeleteClickListener, OnSwipeToDeleteListener {
 
     private FirebaseFirestore db;
     private List<Expense> expenseList;
     private RecyclerView recyclerView;
     private ExpenseAdapter expenseAdapter;
+    private SharedViewModel sharedViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +44,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
         expenseList = new ArrayList<>();
         expenseAdapter = new ExpenseAdapter(expenseList);
         expenseAdapter.setOnDeleteClickListener(this);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
     }
 
     @Override
@@ -47,6 +54,9 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(expenseAdapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(this));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         FloatingActionButton fab = view.findViewById(R.id.add_expense_floatingActionButton);
 
@@ -60,13 +70,10 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
             }
         });
 
-        return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         fetchExpenseData();
+        sharedViewModel.setExpenseList(expenseList);
+
+        return view;
     }
 
     private void fetchExpenseData() {
@@ -82,29 +89,52 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
                     expenseAdapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "aaaa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Failed to fetch expense data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
     @Override
     public void onDeleteClick(int position) {
-        Expense expense = expenseList.get(position);
-        String expenseId = expense.getId();
-        db.collection("expense")
-                .document(expenseId)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        expenseList.remove(position);
-                        expenseAdapter.notifyItemRemoved(position);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(requireContext(), "Failed to delete expense: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+         Expense expense = expenseList.get(position);
+        String incomeId = expense.getId();
+
+        // Ensure incomeId is not null before attempting to delete
+        if (incomeId != null && !incomeId.isEmpty()) {
+            db.collection("expense")
+                    .document(incomeId)
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Remove item from local list
+                            expenseList.remove(position);
+
+                            // Notify adapter of item removal
+                            expenseAdapter.notifyItemRemoved(position);
+
+                            // Notify SharedViewModel to remove income
+                            sharedViewModel.removeIncome(position);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(requireContext(), "Failed to delete expense: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(requireContext(), "Expense ID is null or empty", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onSwipedLeft(int position) {
+        onDeleteClick(position);
+    }
+
+    @Override
+    public void onSwipedRight(int position) {
+
     }
 }

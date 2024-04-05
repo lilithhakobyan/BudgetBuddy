@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -62,13 +63,13 @@ public class AddReminderFragment extends Fragment {
 
     private static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
     private TimePicker timePicker;
+    private Button submitButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_reminder, container, false);
 
         mContext = getContext();
-
 
         describeReminderEditText = view.findViewById(R.id.describeReminderEditText);
         timeRemText = view.findViewById(R.id.timeRemText);
@@ -77,16 +78,15 @@ public class AddReminderFragment extends Fragment {
         DateButton = view.findViewById(R.id.date_button);
         dateRemText = view.findViewById(R.id.dateRemText);
         TimeButton = view.findViewById(R.id.time_button);
+        submitButton = view.findViewById(R.id.submit_btn);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
-
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.choices_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         choiceSpinner.setAdapter(adapter);
-
 
         DateButton.setOnClickListener(v -> openDatePicker());
         TimeButton.setOnClickListener(v -> openTimePicker());
@@ -102,23 +102,56 @@ public class AddReminderFragment extends Fragment {
             }
         });
 
-        Button submitButton = view.findViewById(R.id.submit_btn);
         submitButton.setOnClickListener(v -> {
-            long timestamp = saveReminderToFirestore();
-            if (timestamp != 0) {
-                scheduleReminder(timestamp);
-                openReminderFragment();
-            } else {
-                // Handle error case where timestamp couldn't be generated
-                Toast.makeText(requireContext(), "Error saving reminder", Toast.LENGTH_SHORT).show();
-            }
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireContext());
+            alertDialogBuilder.setTitle("Add Reminder to Calendar");
+            alertDialogBuilder.setMessage("Do you want to add this reminder to your calendar?");
+            alertDialogBuilder.setPositiveButton("Yes", (dialog, which) -> {
+                long timestamp = saveReminderToFirestore();
+                if (timestamp != 0) {
+                    scheduleReminder(timestamp);
+                    openReminderFragment();
+                } else {
+                    // Handle error case where timestamp couldn't be generated
+                    Toast.makeText(requireContext(), "Error saving reminder", Toast.LENGTH_SHORT).show();
+                }
+            });
+            alertDialogBuilder.setNegativeButton("No", (dialog, which) -> {
+                // Do nothing or show a message
+                Toast.makeText(requireContext(), "Reminder not added to calendar", Toast.LENGTH_SHORT).show();
+            });
+            alertDialogBuilder.show();
         });
 
         ImageView imageView = view.findViewById(R.id.close_addrem);
         imageView.setOnClickListener(v -> showAlertDialog());
 
-
         return view;
+    }
+
+    private void addEventToCalendar() {
+        // Get the current date and time
+        Calendar beginTime = Calendar.getInstance();
+        Calendar endTime = Calendar.getInstance();
+        endTime.add(Calendar.HOUR_OF_DAY, 1); // Assuming event duration is one hour
+
+        // Create an intent to add an event to the calendar
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
+                .putExtra(CalendarContract.Events.TITLE, describeReminderEditText.getText().toString())
+                .putExtra(CalendarContract.Events.DESCRIPTION, amountEditText.getText().toString())
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Your location")
+                .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+
+        // Check if there's an app to handle the intent
+        if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            // Handle case where there's no app to handle the intent
+            Toast.makeText(requireContext(), "No calendar app found", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private long saveReminderToFirestore() {
@@ -161,7 +194,6 @@ public class AddReminderFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "Reminder added with ID: " + task.getResult().getId());
-
                         clearInputFields();
                     } else {
                         Log.w(TAG, "Error adding reminder", task.getException());
@@ -170,7 +202,6 @@ public class AddReminderFragment extends Fragment {
         return dateTime;
     }
 
-    // Method to clear input fields after submission
     private void clearInputFields() {
         describeReminderEditText.getText().clear();
         amountEditText.getText().clear();
@@ -178,7 +209,6 @@ public class AddReminderFragment extends Fragment {
         dateRemText.setText("");
     }
 
-    // Method to show alert dialog before closing fragment
     private void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Cancel Reminder Confirmation")
@@ -210,7 +240,6 @@ public class AddReminderFragment extends Fragment {
             if (date != null) {
                 return date.getTime();
             } else {
-                // Handle case where parsed date is null
                 Log.e(TAG, "Parsed date is null");
                 return 0;
             }
@@ -244,7 +273,7 @@ public class AddReminderFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 int year = datePickerDialog.getDatePicker().getYear();
-                int month = datePickerDialog.getDatePicker().getMonth() + 1;  // Month is 0-based
+                int month = datePickerDialog.getDatePicker().getMonth() + 1;
                 int day = datePickerDialog.getDatePicker().getDayOfMonth();
 
                 String formattedDay = (day < 10) ? "0" + day : String.valueOf(day);
@@ -304,15 +333,7 @@ public class AddReminderFragment extends Fragment {
         if (negativeButton != null) {
             negativeButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.purple));
         }
-
-
-
     }
-
-    public interface OnReminderAddedListener {
-        void onReminderAdded(ReminderClass newReminder);
-    }
-
 
     @SuppressLint("ScheduleExactAlarm")
     private void scheduleReminder(long timestamp) {
@@ -321,7 +342,6 @@ public class AddReminderFragment extends Fragment {
             Log.e(TAG, "AlarmManager is null");
             return;
         }
-
 
         Intent intent = new Intent(requireContext(), ReminderReceiver.class);
         intent.putExtra("REMINDER_MESSAGE", describeReminderEditText.getText().toString());
@@ -333,7 +353,6 @@ public class AddReminderFragment extends Fragment {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timestamp, pendingIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -344,6 +363,4 @@ public class AddReminderFragment extends Fragment {
 
         Log.d(TAG, "Reminder scheduled at timestamp: " + timestamp);
     }
-
-
 }

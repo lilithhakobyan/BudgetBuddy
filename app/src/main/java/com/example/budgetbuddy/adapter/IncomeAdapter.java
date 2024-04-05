@@ -24,6 +24,11 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
         this.incomeList = incomeList;
     }
 
+    public void setIncomeList(List<Income> incomeList) {
+        this.incomeList = incomeList;
+        notifyDataSetChanged();
+    }
+
     public void setOnDeleteClickListener(OnDeleteClickListener listener) {
         this.deleteClickListener = listener;
     }
@@ -46,6 +51,12 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
         return incomeList.size();
     }
 
+    public void setIncomes(List<Income> incomes) {
+        this.incomeList = incomes;
+        notifyDataSetChanged();
+    }
+
+
     public class IncomeViewHolder extends RecyclerView.ViewHolder {
         private TextView categoryTextView;
         private TextView amountTextView;
@@ -57,19 +68,8 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
             categoryTextView = itemView.findViewById(R.id.category_text_view);
             amountTextView = itemView.findViewById(R.id.amount_text_view);
             descriptionTextView = itemView.findViewById(R.id.description_text_view);
-            delete = itemView.findViewById(R.id.delete_income);
 
-            delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (deleteClickListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            deleteClickListener.onDeleteClick(position);
-                        }
-                    }
-                }
-            });
+
         }
 
         public void bind(Income income) {

@@ -21,8 +21,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.budgetbuddy.R;
+import com.example.budgetbuddy.SharedViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -33,6 +35,7 @@ public class AddIncomeFragment extends Fragment {
 
     public interface CategorySelectionListener {
         void onCategorySelected(String categoryName, int categoryIcon);
+
     }
 
     private TextView selectCategoryTextView;
@@ -45,6 +48,8 @@ public class AddIncomeFragment extends Fragment {
     private String selectedCurrency;
     private Button save;
     private ImageView close;
+    private SharedViewModel sharedViewModel;
+
 
     public AddIncomeFragment() {
 
@@ -55,6 +60,7 @@ public class AddIncomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
     }
 
     @Override
@@ -202,6 +208,13 @@ public class AddIncomeFragment extends Fragment {
         db.collection("income")
                 .add(income)
                 .addOnSuccessListener(documentReference -> {
+
+                    List<Income> updatedIncomeList = sharedViewModel.getIncomeList().getValue();
+                    updatedIncomeList.add(income);
+                    sharedViewModel.setIncomeList(updatedIncomeList);
+
+
+
                     if (getActivity() != null) {
                         Toast.makeText(getActivity(), "Income saved successfully", Toast.LENGTH_SHORT).show();
                     }

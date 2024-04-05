@@ -52,6 +52,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation ("com.google.firebase:firebase-messaging:23.4.1")
+    implementation ("com.google.android.gms:play-services-auth:19.2.0")
+
+
     testImplementation("junit:junit:4.13.2")
     implementation ("com.google.android.gms:play-services-auth:21.0.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
