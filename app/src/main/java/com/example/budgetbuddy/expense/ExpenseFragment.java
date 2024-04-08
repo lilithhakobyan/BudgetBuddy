@@ -1,5 +1,6 @@
 package com.example.budgetbuddy.expense;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,11 +48,12 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
 
-        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView = view.findViewById(R.id.recycler_view_expense);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(expenseAdapter);
 

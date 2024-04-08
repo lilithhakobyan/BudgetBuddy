@@ -51,6 +51,11 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         notifyDataSetChanged();
     }
 
+    public void setExpenseList(List<Expense> expenses) {
+        this.expenseList = expenses;
+        notifyDataSetChanged();
+    }
+
     public class ExpenseViewHolder extends RecyclerView.ViewHolder {
         private TextView categoryTextView;
         private TextView amountTextView;
@@ -64,6 +69,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
 
         }
+        
 
         public void bind(Expense expense) {
             categoryTextView.setText(expense.getCategory());

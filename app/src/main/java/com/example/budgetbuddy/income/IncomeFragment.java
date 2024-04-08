@@ -1,5 +1,6 @@
 package com.example.budgetbuddy.income;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,22 +21,35 @@ import com.example.budgetbuddy.SharedViewModel;
 import com.example.budgetbuddy.SwipeToDeleteCallback;
 import com.example.budgetbuddy.adapter.IncomeAdapter;
 import com.example.budgetbuddy.income.Income;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class IncomeFragment extends Fragment implements IncomeAdapter.OnDeleteClickListener, OnSwipeToDeleteListener {
 
+    private Context mContext; // Store the context
+
     private FirebaseFirestore db;
     private List<Income> incomeList;
     private RecyclerView recyclerView;
     private IncomeAdapter incomeAdapter;
     private SharedViewModel sharedViewModel;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context; // Store the context when fragment is attached
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null; // Release the context when fragment is detached
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,20 +90,35 @@ public class IncomeFragment extends Fragment implements IncomeAdapter.OnDeleteCl
         return view;
     }
 
-    private void fetchIncomeData() {
-        db.collection("income")
+    public void fetchIncomeData() {
+        FirebaseFirestore.getInstance().collection("income")
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    incomeList.clear();
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        Income income = documentSnapshot.toObject(Income.class);
-                        income.setId(documentSnapshot.getId());
-                        incomeList.add(income);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Check if mContext is not null before using it
+                        if (mContext != null) {
+
+                        }
+                        QuerySnapshot queryDocumentSnapshots = task.getResult();
+                        if (queryDocumentSnapshots != null && incomeList != null) {
+                            incomeList.clear(); // Clear the existing list
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                Income income = documentSnapshot.toObject(Income.class);
+                                income.setId(documentSnapshot.getId());
+                                incomeList.add(income);
+                            }
+                            incomeAdapter.notifyDataSetChanged();
+                            sharedViewModel.setIncomeList(incomeList);
+                        } else {
+                            if (mContext != null) {
+                                Toast.makeText(mContext, "No income data found", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        if (mContext != null) {
+                            Toast.makeText(mContext, "Failed to fetch income data: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
-                    incomeAdapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Failed to fetch income data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -98,35 +127,26 @@ public class IncomeFragment extends Fragment implements IncomeAdapter.OnDeleteCl
         Income income = incomeList.get(position);
         String incomeId = income.getId();
 
-        // Ensure incomeId is not null before attempting to delete
         if (incomeId != null && !incomeId.isEmpty()) {
             db.collection("income")
                     .document(incomeId)
                     .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Remove item from local list
-                            incomeList.remove(position);
-
-                            // Notify adapter of item removal
-                            incomeAdapter.notifyItemRemoved(position);
-
-                            // Notify SharedViewModel to remove income
-                            sharedViewModel.removeIncome(position);
-                        }
+                    .addOnSuccessListener(aVoid -> {
+                        incomeList.remove(position);
+                        incomeAdapter.notifyItemRemoved(position);
+                        sharedViewModel.removeIncome(position);
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(requireContext(), "Failed to delete income: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    .addOnFailureListener(e -> {
+                        if (mContext != null) {
+                            Toast.makeText(mContext, "Failed to delete income: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         } else {
-            Toast.makeText(requireContext(), "Income ID is null or empty", Toast.LENGTH_SHORT).show();
+            if (mContext != null) {
+                Toast.makeText(mContext, "Income ID is null or empty", Toast.LENGTH_SHORT).show();
+            }
         }
     }
-    
 
     @Override
     public void onSwipedLeft(int position) {

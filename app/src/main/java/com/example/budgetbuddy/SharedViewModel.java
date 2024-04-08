@@ -30,7 +30,6 @@ public class SharedViewModel extends ViewModel {
         }
     }
 
-    // Expense methods
     public void setExpenseList(List<Expense> expenses) {
         expenseList.setValue(expenses);
     }
