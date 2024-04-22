@@ -1,6 +1,6 @@
 package com.example.budgetbuddy.income;
 
-import static com.example.budgetbuddy.CurrencyUtils.fetchCurrencies;
+import static com.example.budgetbuddy.CurrencyUtils2.fetchCurrencies;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -186,7 +186,6 @@ public class AddIncomeFragment extends Fragment {
             return;
         }
 
-        // Check if a category is selected
         if (selectedCategory == null) {
             Toast.makeText(requireContext(), "Please select a category", Toast.LENGTH_SHORT).show();
             return;

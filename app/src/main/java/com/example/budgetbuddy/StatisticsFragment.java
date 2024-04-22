@@ -1,5 +1,7 @@
 package com.example.budgetbuddy;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,15 +10,20 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.budgetbuddy.expense.Expense;
 import com.example.budgetbuddy.income.Income;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +47,6 @@ public class StatisticsFragment extends Fragment {
 
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-        // Observe income and expense lists
         sharedViewModel.getIncomeList().observe(getViewLifecycleOwner(), new Observer<List<Income>>() {
             @Override
             public void onChanged(List<Income> incomes) {
@@ -59,6 +65,18 @@ public class StatisticsFragment extends Fragment {
             }
         });
     }
+
+    private void setupPieChart() {
+        Legend legend = pieChart.getLegend();
+        legend.setTextSize(20f); // Set the desired text size here
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupPieChart(); // Call the method to set up the pie chart configuration including the legend text size
+    }
+
 
     private float calculateTotalIncome(List<Income> incomes) {
         float totalIncome = 0;
@@ -99,6 +117,47 @@ public class StatisticsFragment extends Fragment {
         pieChart.setCenterText("Income vs Expenses");
         pieChart.animateY(1000);
         pieChart.invalidate();
+
+        Legend legend = pieChart.getLegend();
+        legend.setTextSize(13f);
+        legend.setXEntrySpace(20f);
+
+        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (e instanceof PieEntry) {
+                    PieEntry pieEntry = (PieEntry) e;
+                    if (pieEntry.getLabel().equals("Income")) {
+                        openIncomeCategoriesPieChart();
+                    }else if (pieEntry.getLabel().equals("Expenses")) {
+                        openExpenseCategoriesPieChart();
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
+
+        pieChart.setNoDataTextColor(Color.RED);
+        pieChart.setNoDataTextTypeface(Typeface.DEFAULT_BOLD);
     }
 
+    private void openIncomeCategoriesPieChart() {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        IncomePieChart fragment = new IncomePieChart();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void openExpenseCategoriesPieChart() {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        ExpensePieChart fragment = new ExpensePieChart();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }

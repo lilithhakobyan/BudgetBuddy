@@ -1,68 +1,89 @@
 package com.example.budgetbuddy;
 
 import android.content.Context;
-import android.text.TextUtils;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import javax.money.CurrencyUnit;
-import javax.money.Monetary;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class CurrencyUtils {
 
-    private static final String[] PRIORITY_CURRENCIES = {"ARM","USD", "EUR"};
+    // Method to fetch currency data from ExchangeRate-API
+// Method to fetch currency data from ExchangeRate-API
+    public static void fetchCurrencies(Context context, CurrencyFetchListener listener) {
+        OkHttpClient client = new OkHttpClient();
 
-    public static List<String> fetchCurrencies() {
-        List<String> currencies = new ArrayList<>();
-        currencies.add("Select currency");
+        // Replace "YOUR_API_KEY" with your actual ExchangeRate-API key
+        String apiKey = "3ac52919a6-43e23b931c-sc73tb";
 
-        for (CurrencyUnit currencyUnit : Monetary.getCurrencies()) {
-            currencies.add(currencyUnit.getCurrencyCode());
-        }
+        Request request = new Request.Builder()
+                .url("https://api.fastforex.io/currencies?api_key=" + apiKey)
+                .build();
 
-        Collections.sort(currencies.subList(1, currencies.size()), (currency1, currency2) -> {
-            if (isPriorityCurrency(currency1) && !isPriorityCurrency(currency2)) {
-                return -1;
-            } else if (!isPriorityCurrency(currency1) && isPriorityCurrency(currency2)) {
-                return 1;
-            } else {
-                return currency1.compareTo(currency2);
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                if (context != null) {
+                    Toast.makeText(context, "Failed to fetch currencies", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    List<String> currencies = parseCurrencyResponse(responseData);
+
+                    // Update the spinner adapter on the main/UI thread
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onCurrencyFetchSuccess(currencies);
+                        }
+                    });
+                } else {
+                    if (context != null) {
+                        Toast.makeText(context, "Failed to fetch currencies: " + response.message(), Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
+    }
 
+
+    // Method to parse currency data from the API response
+    private static List<String> parseCurrencyResponse(String responseData) {
+        List<String> currencies = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(responseData);
+            JSONArray currenciesArray = jsonObject.getJSONArray("results");
+            for (int i = 0; i < currenciesArray.length(); i++) {
+                JSONObject currencyObject = currenciesArray.getJSONObject(i);
+                String currency = currencyObject.getString("id");
+                currencies.add(currency);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return currencies;
     }
 
-    public static void populateCurrencySpinner(Context context, Spinner spinner, String searchQuery) {
-        List<String> currencies = fetchCurrencies();
-        List<String> filteredCurrencies = new ArrayList<>();
-
-        if (!TextUtils.isEmpty(searchQuery)) {
-            for (String currency : currencies) {
-                if (currency.toLowerCase().contains(searchQuery.toLowerCase())) {
-                    filteredCurrencies.add(currency);
-                }
-            }
-        } else {
-            filteredCurrencies.addAll(currencies);
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, filteredCurrencies);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinner.setAdapter(adapter);
-    }
-
-    private static boolean isPriorityCurrency(String currency) {
-        for (String priorityCurrency : PRIORITY_CURRENCIES) {
-            if (priorityCurrency.equals(currency)) {
-                return true;
-            }
-        }
-        return false;
+    public interface CurrencyFetchListener {
+        void onCurrencyFetchSuccess(List<String> currencies);
     }
 }

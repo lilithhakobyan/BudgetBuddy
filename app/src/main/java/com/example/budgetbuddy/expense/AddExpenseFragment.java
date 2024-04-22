@@ -1,6 +1,7 @@
 package com.example.budgetbuddy.expense;
 
-import android.app.Activity;
+import static com.example.budgetbuddy.CurrencyUtils2.fetchCurrencies;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -26,7 +27,6 @@ import com.example.budgetbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AddExpenseFragment extends Fragment {
@@ -63,12 +63,7 @@ public class AddExpenseFragment extends Fragment {
 
         Spinner spinner = view.findViewById(R.id.currency_spinner);
 
-        List<String> currencies = new ArrayList<>();
-        currencies.add("Select currency");
-        currencies.add("USD");
-        currencies.add("EUR");
-        currencies.add("GBP");
-        currencies.add("JPY");
+        List<String> currencies = fetchCurrencies();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, currencies);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,7 +84,6 @@ public class AddExpenseFragment extends Fragment {
 
         return view;
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

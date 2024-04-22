@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:background="@color/dark_blue"
     tools:context=".SettingsFragment">
 
     <TextView
@@ -12,61 +12,71 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Account"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="20dp"
         android:layout_marginTop="40dp"/>
 
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:background="@drawable/dialog_bkg"
+        app:layout_constraintTop_toBottomOf="@id/acc_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="80dp">
 
         <TextView
             android:id="@+id/email_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Email"
-            android:paddingStart="20dp"
-            android:paddingTop="20sp"/>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp">
-
+            android:drawableStart="@drawable/email"
+            android:drawablePadding="18dp"
+            android:textSize="16sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="50dp"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/about_us_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="About us"
-            android:paddingStart="20dp"
-            android:paddingTop="20sp"/>
+            android:text="About Us"
+            android:drawableStart="@drawable/about"
+            android:textSize="16sp"
+            android:drawablePadding="18dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"/>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp">
-
+        <TextView
+            android:id="@+id/currency_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Currency Converter"
+            android:drawableStart="@drawable/money"
+            android:textSize="16sp"
+            android:drawablePadding="18dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"/>
 
         <TextView
             android:id="@+id/log_out"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Log out"
-            android:paddingStart="20dp"
-            android:paddingTop="20sp"/>
+            android:text="Log Out"
+            android:drawablePadding="18dp"
+            android:drawableStart="@drawable/logout"
+            android:textSize="16sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"/>
 
     </LinearLayout>
 
-
-
-
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
