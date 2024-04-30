@@ -3,7 +3,6 @@ package com.example.budgetbuddy.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +42,9 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
     @Override
     public void onBindViewHolder(@NonNull IncomeViewHolder holder, int position) {
         Income income = incomeList.get(position);
+        holder.currencyTextView.setText(income.getCurrency());
+        holder.amountTextView.setText(income.getAmountAsFormattedString());
+
         holder.bind(income);
     }
 
@@ -62,13 +64,14 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
         private TextView amountTextView;
         private TextView descriptionTextView;
         private ImageView delete;
+        private TextView currencyTextView;
 
         public IncomeViewHolder(@NonNull View itemView) {
             super(itemView);
             categoryTextView = itemView.findViewById(R.id.category_text_view);
             amountTextView = itemView.findViewById(R.id.amount_text_view);
             descriptionTextView = itemView.findViewById(R.id.description_text_view);
-
+            currencyTextView = itemView.findViewById(R.id.currencyTextView);
 
         }
 

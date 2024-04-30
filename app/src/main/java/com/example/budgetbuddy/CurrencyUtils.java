@@ -21,13 +21,14 @@ import okhttp3.Response;
 
 public class CurrencyUtils {
 
-    // Method to fetch currency data from ExchangeRate-API
-// Method to fetch currency data from ExchangeRate-API
+    private static final String API_BASE_URL = "https://api.fastforex.io/convert?";
+    private static final String TAG = "CurrencyUtils";
+
     public static void fetchCurrencies(Context context, CurrencyFetchListener listener) {
         OkHttpClient client = new OkHttpClient();
 
         // Replace "YOUR_API_KEY" with your actual ExchangeRate-API key
-        String apiKey = "3ac52919a6-43e23b931c-sc73tb";
+        String apiKey = "ea212fedb9-7368eabcea-scpiw5";
 
         Request request = new Request.Builder()
                 .url("https://api.fastforex.io/currencies?api_key=" + apiKey)
@@ -83,7 +84,47 @@ public class CurrencyUtils {
         return currencies;
     }
 
+    public static void convertCurrency(String fromCurrency, String toCurrency, double amount, String apiKey, CurrencyConversionListener listener) {
+        // Construct the API URL with parameters
+        String apiUrl = API_BASE_URL + "from=" + fromCurrency + "&to=" + toCurrency + "&amount=" + amount + "&api_key=" + apiKey;
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(apiUrl)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                listener.onConversionError("Failed to convert currency: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String responseData = response.body().string();
+                        JSONObject jsonResponse = new JSONObject(responseData);
+                        double convertedAmount = jsonResponse.getDouble("result");
+                        listener.onCurrencyConversion(convertedAmount);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        listener.onConversionError("Failed to parse currency conversion response: " + e.getMessage());
+                    }
+                } else {
+                    listener.onConversionError("Failed to convert currency: " + response.message());
+                }
+            }
+        });
+    }
+
     public interface CurrencyFetchListener {
         void onCurrencyFetchSuccess(List<String> currencies);
+    }
+
+    public interface CurrencyConversionListener {
+        void onCurrencyConversion(double convertedAmount);
+        void onConversionError(String errorMessage);
     }
 }

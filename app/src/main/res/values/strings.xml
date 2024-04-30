@@ -20,5 +20,6 @@
     <string name="choose_currency">Choose currency</string>
     <string name="default_web_client_id" translatable="false">291074126711-1bs10dga538kpt6t379jobrflb4dpngi.apps.googleusercontent.com</string>
     <string name="default_notification_channel_id">notif</string>
+    <string name="amount_and_currency_format">%1$.2f %2$s</string>
 
 </resources>

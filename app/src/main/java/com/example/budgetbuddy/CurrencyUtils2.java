@@ -13,6 +13,8 @@ import java.util.List;
 
 public class CurrencyUtils2 {
 
+
+
     private static final String[] PRIORITY_CURRENCIES = {"AMD", "USD", "EUR"};
 
     public static List<String> fetchCurrencies() {
@@ -64,4 +66,6 @@ public class CurrencyUtils2 {
         }
         return false;
     }
+
+
 }

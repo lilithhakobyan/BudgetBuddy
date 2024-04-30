@@ -22,8 +22,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.budgetbuddy.R;
+import com.example.budgetbuddy.SharedViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -45,6 +47,7 @@ public class AddExpenseFragment extends Fragment {
     private String selectedCurrency;
     private Button save;
     private ImageView close;
+    private SharedViewModel sharedViewModel;
 
     public AddExpenseFragment() {
 
@@ -55,6 +58,7 @@ public class AddExpenseFragment extends Fragment {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
     }
 
     @Override
@@ -196,6 +200,11 @@ public class AddExpenseFragment extends Fragment {
         db.collection("expense")
                 .add(expense)
                 .addOnSuccessListener(documentReference -> {
+
+                    List<Expense> updatedExpenseList = sharedViewModel.getExpenseList().getValue();
+                    updatedExpenseList.add(expense);
+                    sharedViewModel.setExpenseList(updatedExpenseList);
+
                     Log.i("AddExpenseFragment", "Expense saved successfully");
                     if (getActivity() != null) {
                         Toast.makeText(getActivity(), "Expense saved successfully", Toast.LENGTH_SHORT).show();

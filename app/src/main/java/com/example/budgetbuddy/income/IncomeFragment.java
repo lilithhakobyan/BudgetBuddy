@@ -15,12 +15,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.OnSwipeToDeleteListener;
+import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.SharedViewModel;
 import com.example.budgetbuddy.SwipeToDeleteCallback;
 import com.example.budgetbuddy.adapter.IncomeAdapter;
-import com.example.budgetbuddy.income.Income;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -48,7 +47,7 @@ public class IncomeFragment extends Fragment implements IncomeAdapter.OnDeleteCl
     @Override
     public void onDetach() {
         super.onDetach();
-        mContext = null; // Release the context when fragment is detached
+        mContext = null;
     }
 
     @Override

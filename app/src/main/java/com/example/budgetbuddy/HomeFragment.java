@@ -1,11 +1,12 @@
 package com.example.budgetbuddy;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,21 +24,30 @@ import com.example.budgetbuddy.expense.ExpenseFragment;
 import com.example.budgetbuddy.income.Income;
 import com.example.budgetbuddy.income.IncomeFragment;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetchListener {
     private SharedViewModel sharedViewModel;
     private RecyclerView recyclerView;
     private CombinedAdapter combinedAdapter;
     private IncomeAdapter incomeAdapter;
     private ExpenseAdapter expenseAdapter;
     private TextView balanceTextView;
+    private Spinner currencySpinner;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        // Fetch currencies when fragment is created
+        CurrencyUtils.fetchCurrencies(requireContext(), this);
     }
 
     @Nullable
@@ -50,6 +60,7 @@ public class HomeFragment extends Fragment {
         combinedAdapter = new CombinedAdapter(new ArrayList<>());
         recyclerView.setAdapter(combinedAdapter);
         balanceTextView = view.findViewById(R.id.balanceTextView);
+        currencySpinner = view.findViewById(R.id.balanceSpinner);
 
         Button incomeButton = view.findViewById(R.id.income);
         Button expenseButton = view.findViewById(R.id.expense);
@@ -75,7 +86,10 @@ public class HomeFragment extends Fragment {
         });
 
         IncomeFragment incomeFragment = new IncomeFragment();
-        incomeFragment.fetchIncomeData(); // Call fetchIncomeData() from IncomeFragment
+        incomeFragment.fetchIncomeData();
+
+
+
         return view;
     }
 
@@ -83,15 +97,20 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Observe changes in income and expense lists and update the adapter accordingly
+        currencySpinner = view.findViewById(R.id.balanceSpinner);
+
+        CurrencyUtils.fetchCurrencies(requireContext(), this);
+
         sharedViewModel.getIncomeList().observe(getViewLifecycleOwner(), incomes -> {
             updateCombinedList();
             updateBalance();
+            calculateTotalIncomeByCurrency();
         });
 
         sharedViewModel.getExpenseList().observe(getViewLifecycleOwner(), expenses -> {
             updateCombinedList();
             updateBalance();
+            calculateTotalExpenseByCurrency();
         });
     }
 
@@ -110,39 +129,79 @@ public class HomeFragment extends Fragment {
         combinedAdapter.updateItems(combinedList);
     }
 
-    private void updateBalance() {
-        double totalIncome = calculateTotalIncome();
-        double totalExpense = calculateTotalExpense();
-        double balance = totalIncome - totalExpense;
-        // Format balance to two decimal places
-        String formattedBalance = String.format("%.2f", balance);
-
-        // Log the calculated balance
-        Log.d("Balance", "Total Income: " + totalIncome + ", Total Expense: " + totalExpense + ", Balance: " + formattedBalance);
-
-        balanceTextView.setText("Balance: " + formattedBalance);
-    }
-
-
-    private double calculateTotalIncome() {
-        double totalIncome = 0.0;
+    private Map<String, Double> calculateTotalIncomeByCurrency() {
+        Map<String, Double> totalIncomeByCurrency = new HashMap<>();
         List<Income> incomes = sharedViewModel.getIncomeList().getValue();
         if (incomes != null) {
             for (Income income : incomes) {
-                totalIncome += income.getAmount();
+                String currency = income.getCurrency();
+                double amount = income.getAmount();
+
+                if (totalIncomeByCurrency.containsKey(currency)) {
+                    double currentTotal = totalIncomeByCurrency.get(currency);
+                    totalIncomeByCurrency.put(currency, currentTotal + amount);
+                } else {
+                    totalIncomeByCurrency.put(currency, amount);
+                }
             }
         }
-        return totalIncome;
+        return totalIncomeByCurrency;
     }
 
-    private double calculateTotalExpense() {
-        double totalExpense = 0.0;
+    private Map<String, Double> calculateTotalExpenseByCurrency() {
+        Map<String, Double> totalExpenseByCurrency = new HashMap<>();
         List<Expense> expenses = sharedViewModel.getExpenseList().getValue();
         if (expenses != null) {
             for (Expense expense : expenses) {
-                totalExpense += expense.getAmount();
+                String currency = expense.getCurrency();
+                double amount = expense.getAmount();
+
+                if (totalExpenseByCurrency.containsKey(currency)) {
+                    double currentTotal = totalExpenseByCurrency.get(currency);
+                    totalExpenseByCurrency.put(currency, currentTotal + amount);
+                } else {
+                    totalExpenseByCurrency.put(currency, amount);
+                }
             }
         }
-        return totalExpense;
+        return totalExpenseByCurrency;
     }
+
+    private void updateBalance() {
+        Map<String, Double> totalIncomeByCurrency = calculateTotalIncomeByCurrency();
+        Map<String, Double> totalExpenseByCurrency = calculateTotalExpenseByCurrency();
+
+        StringBuilder balanceText = new StringBuilder();
+
+        for (Map.Entry<String, Double> entry : totalIncomeByCurrency.entrySet()) {
+            String currency = entry.getKey();
+            double totalIncome = entry.getValue();
+            double totalExpense = totalExpenseByCurrency.getOrDefault(currency, 0.0);
+            double balance = totalIncome - totalExpense;
+
+            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
+            currencyFormatter.setCurrency(Currency.getInstance(currency));
+            String formattedBalance = currencyFormatter.format(balance);
+
+            balanceText.append(currency).append(": ").append(formattedBalance).append("\n");
+        }
+
+        balanceTextView.setText(balanceText.toString());
+    }
+
+
+
+    @Override
+    public void onCurrencyFetchSuccess(List<String> currencies) {
+        ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, currencies);
+        currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        currencySpinner.setAdapter(currencyAdapter);
+
+        if (currencySpinner.getSelectedItem() == null && currencies.size() > 0) {
+            currencySpinner.setSelection(0);
+        }
+
+        updateBalance();
+    }
+
 }

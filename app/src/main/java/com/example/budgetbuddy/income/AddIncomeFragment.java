@@ -196,7 +196,9 @@ public class AddIncomeFragment extends Fragment {
             return;
         }
 
-        double amount = Double.parseDouble(amountStr);
+        String[] parts = amountStr.split(" ");
+        double amount = Double.parseDouble(parts[0]);
+
 
         Income income = new Income(amount, selectedCategory.getCategoryName(), description, selectedCurrency);
         db.collection("income")

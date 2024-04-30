@@ -44,6 +44,12 @@
             android:text="Amount: " />
 
         <TextView
+            android:id="@+id/currency_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Currency: " />
+
+        <TextView
             android:id="@+id/category_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

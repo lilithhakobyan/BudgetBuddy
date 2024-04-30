@@ -1,6 +1,5 @@
 package com.example.budgetbuddy.expense;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.SharedViewModel;
 import com.example.budgetbuddy.SwipeToDeleteCallback;
 import com.example.budgetbuddy.adapter.ExpenseAdapter;
-import com.example.budgetbuddy.income.Income;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -75,6 +73,7 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
         fetchExpenseData();
         sharedViewModel.setExpenseList(expenseList);
 
+
         return view;
     }
 
@@ -89,21 +88,24 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
                         expenseList.add(expense);
                     }
                     expenseAdapter.notifyDataSetChanged();
+                    sharedViewModel.setExpenseList(expenseList);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(requireContext(), "Failed to fetch expense data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
+
+
     @Override
     public void onDeleteClick(int position) {
-         Expense expense = expenseList.get(position);
-        String incomeId = expense.getId();
+        Expense expense = expenseList.get(position);
+        String expenseId = expense.getId();
 
-        // Ensure incomeId is not null before attempting to delete
-        if (incomeId != null && !incomeId.isEmpty()) {
+        // Ensure expenseId is not null before attempting to delete
+        if (expenseId != null && !expenseId.isEmpty()) {
             db.collection("expense")
-                    .document(incomeId)
+                    .document(expenseId)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -114,8 +116,8 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
                             // Notify adapter of item removal
                             expenseAdapter.notifyItemRemoved(position);
 
-                            // Notify SharedViewModel to remove income
-                            sharedViewModel.removeIncome(position);
+                            // Notify SharedViewModel to remove expense
+                            sharedViewModel.removeExpense(position);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -129,7 +131,6 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
         }
     }
 
-
     @Override
     public void onSwipedLeft(int position) {
         onDeleteClick(position);
@@ -137,6 +138,6 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
 
     @Override
     public void onSwipedRight(int position) {
-
+        // Implement if needed
     }
 }

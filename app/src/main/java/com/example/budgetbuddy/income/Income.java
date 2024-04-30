@@ -1,5 +1,7 @@
 package com.example.budgetbuddy.income;
 
+import java.text.DecimalFormat;
+
 public class Income {
     private String id;
     private double amount;
@@ -18,6 +20,10 @@ public class Income {
     }
 
 
+    public String getAmountAsFormattedString() {
+        DecimalFormat format = new DecimalFormat("0.00");
+        return format.format(amount) + " " + currency;
+    }
 
     public double getAmount() {
         return amount;
