@@ -23,6 +23,8 @@ import com.example.budgetbuddy.expense.Expense;
 import com.example.budgetbuddy.expense.ExpenseFragment;
 import com.example.budgetbuddy.income.Income;
 import com.example.budgetbuddy.income.IncomeFragment;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -41,13 +43,16 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
     private TextView balanceTextView;
     private Spinner currencySpinner;
 
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-        // Fetch currencies when fragment is created
         CurrencyUtils.fetchCurrencies(requireContext(), this);
+        fetchIncomeData();
+        fetchExpenseData();
     }
 
     @Nullable
@@ -97,6 +102,9 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+
+
         currencySpinner = view.findViewById(R.id.balanceSpinner);
 
         CurrencyUtils.fetchCurrencies(requireContext(), this);
@@ -113,6 +121,45 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
             calculateTotalExpenseByCurrency();
         });
     }
+
+    private void fetchIncomeData() {
+        // Fetch income data from Firebase and update ViewModel
+        // Example:
+        FirebaseFirestore.getInstance().collection("income")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Income> incomes = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Income income = document.toObject(Income.class);
+                            incomes.add(income);
+                        }
+                        sharedViewModel.setIncomeList(incomes); // Update ViewModel
+                    } else {
+                        // Handle error
+                    }
+                });
+    }
+
+    private void fetchExpenseData() {
+        // Fetch expense data from Firebase and update ViewModel
+        // Example:
+        FirebaseFirestore.getInstance().collection("expense")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Expense> expenses = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Expense expense = document.toObject(Expense.class);
+                            expenses.add(expense);
+                        }
+                        sharedViewModel.setExpenseList(expenses); // Update ViewModel
+                    } else {
+                        // Handle error
+                    }
+                });
+    }
+
 
     private void updateCombinedList() {
         List<Object> combinedList = new ArrayList<>();
