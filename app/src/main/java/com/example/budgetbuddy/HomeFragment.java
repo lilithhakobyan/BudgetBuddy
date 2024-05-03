@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,9 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.budgetbuddy.adapter.CombinedAdapter;
-import com.example.budgetbuddy.adapter.ExpenseAdapter;
-import com.example.budgetbuddy.adapter.IncomeAdapter;
-import com.example.budgetbuddy.currency.CurrencyUtils;
 import com.example.budgetbuddy.expense.Expense;
 import com.example.budgetbuddy.expense.ExpenseFragment;
 import com.example.budgetbuddy.income.Income;
@@ -35,14 +30,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetchListener {
+public class HomeFragment extends Fragment  {
     private SharedViewModel sharedViewModel;
     private RecyclerView recyclerView;
     private CombinedAdapter combinedAdapter;
-    private IncomeAdapter incomeAdapter;
-    private ExpenseAdapter expenseAdapter;
     private TextView balanceTextView;
-    private Spinner currencySpinner;
+
 
 
 
@@ -51,7 +44,6 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
         super.onCreate(savedInstanceState);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-        CurrencyUtils.fetchCurrencies(requireContext(), this);
         fetchIncomeData();
         fetchExpenseData();
     }
@@ -66,7 +58,6 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
         combinedAdapter = new CombinedAdapter(new ArrayList<>());
         recyclerView.setAdapter(combinedAdapter);
         balanceTextView = view.findViewById(R.id.balanceTextView);
-        currencySpinner = view.findViewById(R.id.balanceSpinner);
 
         Button incomeButton = view.findViewById(R.id.income);
         Button expenseButton = view.findViewById(R.id.expense);
@@ -118,17 +109,13 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
         combinedAdapter.setOnExpenseItemClickListener(new CombinedAdapter.OnExpenseItemClickListener() {
             @Override
             public void onExpenseItemClick(Expense expense) {
-                // Navigate to ExpenseFragment
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
                     activity.loadFragment(new ExpenseFragment(), false);
                 }
             }
         });
-
-        currencySpinner = view.findViewById(R.id.balanceSpinner);
-
-        CurrencyUtils.fetchCurrencies(requireContext(), this);
+        
 
         sharedViewModel.getIncomeList().observe(getViewLifecycleOwner(), incomes -> {
             updateCombinedList();
@@ -251,21 +238,6 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
         }
 
         balanceTextView.setText(balanceText.toString());
-    }
-
-
-
-    @Override
-    public void onCurrencyFetchSuccess(List<String> currencies) {
-        ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, currencies);
-        currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        currencySpinner.setAdapter(currencyAdapter);
-
-        if (currencySpinner.getSelectedItem() == null && currencies.size() > 0) {
-            currencySpinner.setSelection(0);
-        }
-
-        updateBalance();
     }
 
 }

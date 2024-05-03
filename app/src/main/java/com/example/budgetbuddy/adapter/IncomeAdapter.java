@@ -3,7 +3,6 @@ package com.example.budgetbuddy.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -63,7 +62,6 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.IncomeView
         private TextView categoryTextView;
         private TextView amountTextView;
         private TextView descriptionTextView;
-        private ImageView delete;
         private TextView currencyTextView;
 
         public IncomeViewHolder(@NonNull View itemView) {

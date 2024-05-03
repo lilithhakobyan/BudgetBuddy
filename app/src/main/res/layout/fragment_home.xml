@@ -46,17 +46,6 @@
             app:layout_constraintTop_toBottomOf="@+id/home"/>
 
 
-        <Spinner
-            android:id="@+id/balanceSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/home"
-            app:layout_constraintBottom_toBottomOf="@id/balanceTextView"/>
-
 
         <Button
             android:id="@+id/income"
@@ -69,7 +58,7 @@
             android:text="@string/income"
             android:textColor="@color/dark_blue"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/baseline_attach_money_24"
+
             app:layout_constraintTop_toBottomOf="@id/balanceTextView"/>
 
         <Button
@@ -82,7 +71,6 @@
             android:backgroundTint="@color/white"
             android:text="@string/expense"
             android:textColor="@color/dark_blue"
-            app:icon="@drawable/baseline_account_balance_wallet_24"
             app:layout_constraintTop_toBottomOf="@+id/income"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
