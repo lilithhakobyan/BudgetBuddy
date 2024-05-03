@@ -17,8 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -32,6 +30,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.budgetbuddy.CurrencyUtils2;
 import com.example.budgetbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,6 +47,7 @@ import java.util.Map;
 public class AddReminderFragment extends Fragment {
     private static final String TAG = "AddReminderFragment";
 
+    private Spinner currencySpinner;
     private EditText describeReminderEditText, amountEditText;
     private TextView timeRemText;
     private Spinner choiceSpinner;
@@ -74,33 +74,20 @@ public class AddReminderFragment extends Fragment {
         describeReminderEditText = view.findViewById(R.id.describeReminderEditText);
         timeRemText = view.findViewById(R.id.timeRemText);
         amountEditText = view.findViewById(R.id.AmountEditText);
-        choiceSpinner = view.findViewById(R.id.choiceSpinner);
         DateButton = view.findViewById(R.id.date_button);
         dateRemText = view.findViewById(R.id.dateRemText);
         TimeButton = view.findViewById(R.id.time_button);
         submitButton = view.findViewById(R.id.submit_btn);
+        currencySpinner = view.findViewById(R.id.choiceSpinner);
+
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
-                R.array.choices_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        choiceSpinner.setAdapter(adapter);
+        CurrencyUtils2.populateCurrencySpinner(requireContext(), currencySpinner, "");
 
         DateButton.setOnClickListener(v -> openDatePicker());
         TimeButton.setOnClickListener(v -> openTimePicker());
-        choiceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Handle item selection if needed
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Handle case when nothing is selected if needed
-            }
-        });
 
         submitButton.setOnClickListener(v -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireContext());
@@ -117,7 +104,7 @@ public class AddReminderFragment extends Fragment {
                 }
             });
             alertDialogBuilder.setNegativeButton("No", (dialog, which) -> {
-                // Do nothing or show a message
+                cancelReminder();
                 Toast.makeText(requireContext(), "Reminder not added to calendar", Toast.LENGTH_SHORT).show();
             });
             alertDialogBuilder.show();
@@ -133,7 +120,7 @@ public class AddReminderFragment extends Fragment {
         // Get the current date and time
         Calendar beginTime = Calendar.getInstance();
         Calendar endTime = Calendar.getInstance();
-        endTime.add(Calendar.HOUR_OF_DAY, 1); // Assuming event duration is one hour
+        endTime.add(Calendar.HOUR_OF_DAY, 1);
 
         // Create an intent to add an event to the calendar
         Intent intent = new Intent(Intent.ACTION_INSERT)
@@ -149,7 +136,7 @@ public class AddReminderFragment extends Fragment {
         if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            // Handle case where there's no app to handle the intent
+
             Toast.makeText(requireContext(), "No calendar app found", Toast.LENGTH_SHORT).show();
         }
     }
@@ -335,6 +322,7 @@ public class AddReminderFragment extends Fragment {
         }
     }
 
+    private PendingIntent pendingIntent;
     @SuppressLint("ScheduleExactAlarm")
     private void scheduleReminder(long timestamp) {
         AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
@@ -346,7 +334,7 @@ public class AddReminderFragment extends Fragment {
         Intent intent = new Intent(requireContext(), ReminderReceiver.class);
         intent.putExtra("REMINDER_MESSAGE", describeReminderEditText.getText().toString());
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+        pendingIntent = PendingIntent.getBroadcast(
                 requireContext(),
                 ALARM_REQUEST_CODE,
                 intent,
@@ -362,5 +350,15 @@ public class AddReminderFragment extends Fragment {
         }
 
         Log.d(TAG, "Reminder scheduled at timestamp: " + timestamp);
+    }
+
+    private void cancelReminder() {
+        // Cancel the pending intent if the user decides not to add the reminder to the calendar
+        if (pendingIntent != null) {
+            AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null) {
+                alarmManager.cancel(pendingIntent);
+            }
+        }
     }
 }
