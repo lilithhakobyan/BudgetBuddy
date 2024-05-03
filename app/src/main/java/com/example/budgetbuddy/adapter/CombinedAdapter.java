@@ -16,9 +16,29 @@ import java.util.List;
 
 public class CombinedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Object> items;
+    private OnIncomeItemClickListener incomeListener;
+    private OnExpenseItemClickListener expenseListener;
+
+
 
     private static final int VIEW_TYPE_INCOME = 1;
     private static final int VIEW_TYPE_EXPENSE = 2;
+
+    public interface OnIncomeItemClickListener {
+        void onIncomeItemClick(Income income);
+    }
+
+    public interface OnExpenseItemClickListener {
+        void onExpenseItemClick(Expense expense);
+    }
+
+    public void setOnIncomeItemClickListener(OnIncomeItemClickListener listener) {
+        this.incomeListener = listener;
+    }
+
+    public void setOnExpenseItemClickListener(OnExpenseItemClickListener listener) {
+        this.expenseListener = listener;
+    }
 
     public CombinedAdapter(List<Object> items) {
         this.items = items;
@@ -41,12 +61,29 @@ public class CombinedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Object item = items.get(position);
         if (item instanceof Income) {
-            ((IncomeViewHolder) holder).bind((Income) item);
+            IncomeViewHolder incomeViewHolder = (IncomeViewHolder) holder;
+            incomeViewHolder.bind((Income) item);
+            incomeViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (incomeListener != null) {
+                        incomeListener.onIncomeItemClick((Income) item);
+                    }
+                }
+            });
         } else if (item instanceof Expense) {
-            ((ExpenseViewHolder) holder).bind((Expense) item);
+            ExpenseViewHolder expenseViewHolder = (ExpenseViewHolder) holder;
+            expenseViewHolder.bind((Expense) item);
+            expenseViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (expenseListener != null) {
+                        expenseListener.onExpenseItemClick((Expense) item);
+                    }
+                }
+            });
         }
     }
-
     @Override
     public int getItemCount() {
         return items.size();

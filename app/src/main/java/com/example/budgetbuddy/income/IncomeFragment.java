@@ -30,7 +30,7 @@ import java.util.List;
 
 public class IncomeFragment extends Fragment implements IncomeAdapter.OnDeleteClickListener, OnSwipeToDeleteListener {
 
-    private Context mContext; // Store the context
+    private Context mContext;
 
     private FirebaseFirestore db;
     private List<Income> incomeList;

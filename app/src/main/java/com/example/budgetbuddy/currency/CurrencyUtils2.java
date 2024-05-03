@@ -1,4 +1,4 @@
-package com.example.budgetbuddy;
+package com.example.budgetbuddy.currency;
 
 import android.content.Context;
 import android.text.TextUtils;

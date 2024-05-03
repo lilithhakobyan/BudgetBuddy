@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.budgetbuddy.adapter.CombinedAdapter;
 import com.example.budgetbuddy.adapter.ExpenseAdapter;
 import com.example.budgetbuddy.adapter.IncomeAdapter;
+import com.example.budgetbuddy.currency.CurrencyUtils;
 import com.example.budgetbuddy.expense.Expense;
 import com.example.budgetbuddy.expense.ExpenseFragment;
 import com.example.budgetbuddy.income.Income;
@@ -103,7 +104,27 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
         super.onViewCreated(view, savedInstanceState);
 
 
+        combinedAdapter.setOnIncomeItemClickListener(new CombinedAdapter.OnIncomeItemClickListener() {
+            @Override
+            public void onIncomeItemClick(Income income) {
+                // Navigate to IncomeFragment
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.loadFragment(new IncomeFragment(), false);
+                }
+            }
+        });
 
+        combinedAdapter.setOnExpenseItemClickListener(new CombinedAdapter.OnExpenseItemClickListener() {
+            @Override
+            public void onExpenseItemClick(Expense expense) {
+                // Navigate to ExpenseFragment
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.loadFragment(new ExpenseFragment(), false);
+                }
+            }
+        });
 
         currencySpinner = view.findViewById(R.id.balanceSpinner);
 
@@ -123,8 +144,6 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
     }
 
     private void fetchIncomeData() {
-        // Fetch income data from Firebase and update ViewModel
-        // Example:
         FirebaseFirestore.getInstance().collection("income")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -134,7 +153,7 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
                             Income income = document.toObject(Income.class);
                             incomes.add(income);
                         }
-                        sharedViewModel.setIncomeList(incomes); // Update ViewModel
+                        sharedViewModel.setIncomeList(incomes);
                     } else {
                         // Handle error
                     }
@@ -142,8 +161,6 @@ public class HomeFragment extends Fragment implements CurrencyUtils.CurrencyFetc
     }
 
     private void fetchExpenseData() {
-        // Fetch expense data from Firebase and update ViewModel
-        // Example:
         FirebaseFirestore.getInstance().collection("expense")
                 .get()
                 .addOnCompleteListener(task -> {

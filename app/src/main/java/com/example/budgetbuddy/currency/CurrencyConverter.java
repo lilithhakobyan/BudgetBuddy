@@ -1,4 +1,4 @@
-package com.example.budgetbuddy;
+package com.example.budgetbuddy.currency;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.budgetbuddy.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

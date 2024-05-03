@@ -1,6 +1,6 @@
 package com.example.budgetbuddy.expense;
 
-import static com.example.budgetbuddy.CurrencyUtils2.fetchCurrencies;
+import static com.example.budgetbuddy.currency.CurrencyUtils2.fetchCurrencies;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
