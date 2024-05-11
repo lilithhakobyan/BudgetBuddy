@@ -8,15 +8,17 @@ public class Income {
     private String category;
     private String description;
     private String currency;
+    private String userId;
     public Income() {
 
     }
 
-    public Income(double amount, String category, String description, String currency) {
+    public Income(double amount, String category, String description, String currency, String userId) {
         this.amount = amount;
         this.category = category;
         this.description = description;
         this.currency = currency;
+        this.userId = userId;
     }
 
 

@@ -37,18 +37,15 @@ public class IncomePieChart extends Fragment {
 
         pieChart = view.findViewById(R.id.incomePieChart);
 
-        // Call method to populate the pie chart with income data
         populatePieChart();
     }
 
     private void populatePieChart() {
-        // Sample data for income categories
         List<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(3000f, "Salary"));
         entries.add(new PieEntry(1500f, "Freelance"));
         entries.add(new PieEntry(1000f, "Other"));
 
-        // Define pastel colors
         int[] pastelColors = new int[]{
                 Color.rgb(215, 153, 194), // light pink
                 Color.rgb(255, 209, 128), // light orange

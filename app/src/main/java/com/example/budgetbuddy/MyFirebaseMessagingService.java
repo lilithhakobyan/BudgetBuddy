@@ -1,70 +1,96 @@
 package com.example.budgetbuddy;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
+import android.app.Activity;
+import android.util.Log;
 
-import androidx.core.app.NotificationCompat;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
+import com.example.budgetbuddy.reminder.AddReminderFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
 
-
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        // TODO(developer): Handle FCM messages here.
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
 
-        if (remoteMessage.getNotification()!=null){
-            // Show the notification
-            String notificationBody = remoteMessage.getNotification().getBody();
+        Log.d(TAG, "FCM message received");
+
+        // Log notification title and body if available
+        if (remoteMessage.getNotification() != null) {
             String notificationTitle = remoteMessage.getNotification().getTitle();
+            String notificationBody = remoteMessage.getNotification().getBody();
+            Log.d(TAG, "Notification Title: " + notificationTitle);
+            Log.d(TAG, "Notification Body: " + notificationBody);
+        }
 
-            sendNotification (notificationTitle, notificationBody);
+        // Log data payload if available
+        if (remoteMessage.getData().size() > 0) {
+            Log.d(TAG, "Data Payload:");
+            for (Map.Entry<String, String> entry : remoteMessage.getData().entrySet()) {
+                Log.d(TAG, "Key: " + entry.getKey() + ", Value: " + entry.getValue());
+            }
+        }
 
+        if (remoteMessage.getNotification() != null) {
+            String notificationTitle = remoteMessage.getNotification().getTitle();
+            String notificationBody = remoteMessage.getNotification().getBody();
+            long timeInMillis = parseTimeFromNotification(notificationTitle, notificationBody);
+            scheduleLocalNotification(timeInMillis);
+        }
+    }
+
+    private long parseTimeFromNotification(String title, String body) {
+        // Sample format: "dd/MM/yyyy HH:mm"
+        String dateTimeFormat = "dd/MM/yyyy HH:mm";
+        SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat, Locale.getDefault());
+        try {
+            Date date = sdf.parse(body); // Assuming the time is in the body of the notification
+            if (date != null) {
+                return date.getTime();
+            } else {
+                Log.e(TAG, "Failed to parse date");
+                return 0;
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "Error parsing date: " + e.getMessage());
+            return 0;
         }
     }
 
 
-    private void sendNotification(String title, String body) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_IMMUTABLE);
+    private void scheduleLocalNotification(long timeInMillis) {
+        Activity currentActivity = getCurrentActivity();
 
-        String channelId = "fcm_default_channel";
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(title)
-                        .setContentText(body)
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+        if (currentActivity instanceof FragmentActivity) {
+            FragmentManager fragmentManager = ((FragmentActivity) currentActivity).getSupportFragmentManager();
+            Fragment fragment = fragmentManager.findFragmentByTag("ADD_REMINDER_FRAGMENT_TAG");
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
+            if (fragment instanceof AddReminderFragment) {
+                ((AddReminderFragment) fragment).scheduleLocalNotification(timeInMillis);
+            } else {
+                Log.e(TAG, "AddReminderFragment not found");
+            }
+        } else {
+            Log.e(TAG, "Current activity is not an instance of FragmentActivity");
         }
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
+
+    private Activity getCurrentActivity() {
+        MyApplication application = (MyApplication) getApplicationContext();
+        return application.getCurrentActivity();
+    }
 
 }
-

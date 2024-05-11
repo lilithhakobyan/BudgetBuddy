@@ -68,13 +68,13 @@ public class StatisticsFragment extends Fragment {
 
     private void setupPieChart() {
         Legend legend = pieChart.getLegend();
-        legend.setTextSize(20f); // Set the desired text size here
+        legend.setTextSize(20f);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        setupPieChart(); // Call the method to set up the pie chart configuration including the legend text size
+        setupPieChart();
     }
 
 
@@ -101,7 +101,7 @@ public class StatisticsFragment extends Fragment {
     private void populatePieChart(float income, float expenses) {
         List<PieEntry> entries = new ArrayList<>();
         if (income > 0) {
-            entries.add(new PieEntry(income, "Income"));
+            entries.add(new PieEntry(income, "Incomes"));
         }
         if (expenses > 0) {
             entries.add(new PieEntry(expenses, "Expenses"));
@@ -114,7 +114,7 @@ public class StatisticsFragment extends Fragment {
 
         pieChart.setData(data);
         pieChart.getDescription().setEnabled(false);
-        pieChart.setCenterText("Income vs Expenses");
+        pieChart.setCenterText("Incomes and Expenses");
         pieChart.animateY(1000);
         pieChart.invalidate();
 
@@ -127,7 +127,7 @@ public class StatisticsFragment extends Fragment {
             public void onValueSelected(Entry e, Highlight h) {
                 if (e instanceof PieEntry) {
                     PieEntry pieEntry = (PieEntry) e;
-                    if (pieEntry.getLabel().equals("Income")) {
+                    if (pieEntry.getLabel().equals("Incomes")) {
                         openIncomeCategoriesPieChart();
                     }else if (pieEntry.getLabel().equals("Expenses")) {
                         openExpenseCategoriesPieChart();

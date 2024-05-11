@@ -1,5 +1,6 @@
 package com.example.budgetbuddy.reminder;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,11 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
 import com.example.budgetbuddy.NotificationActivity;
-import com.example.budgetbuddy.R;
 
 public class ReminderReceiver extends BroadcastReceiver {
     private static final String TAG = "ReminderReceiver";
@@ -34,7 +31,9 @@ public class ReminderReceiver extends BroadcastReceiver {
         }
 
         String message = intent.getStringExtra("REMINDER_MESSAGE");
-        if (message != null) {
+        long triggerTime = intent.getLongExtra("REMINDER_TIME", 0); // Get the trigger time
+
+        if (message != null && triggerTime != 0) {
             Log.d(TAG, "Received message: " + message);
 
             // Create an explicit intent for the notification activity
@@ -65,28 +64,15 @@ public class ReminderReceiver extends BroadcastReceiver {
                 }
             }
 
-            // Build the notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.notifications_icon)
-                    .setContentTitle("Reminder")
-                    .setContentText(message)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH) // Ensure heads-up notification
-                    .setAutoCancel(true)
-                    .setSound(defaultSoundUri);
-
-            builder.setFullScreenIntent(pendingIntent, true);
-
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-
-            try {
-                notificationManager.notify(NOTIFICATION_ID, builder.build());
-            } catch (SecurityException e) {
-                Log.e(TAG, "SecurityException: " + e.getMessage());
-                // Handle the SecurityException, e.g., request the required permission from the user
+            // Schedule the notification using AlarmManager
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+            } else {
+                Log.e(TAG, "AlarmManager is null.");
             }
         } else {
-            Log.e(TAG, "Message is null.");
+            Log.e(TAG, "Message or trigger time is null.");
         }
     }
-
 }

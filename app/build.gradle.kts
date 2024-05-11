@@ -65,6 +65,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.2")
     // implementation("javax.money:money-api:1.1")
     // implementation("org.javamoney:moneta:1.4")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     runtimeOnly("org.joda:joda-money:1.0.4")
     implementation("org.joda:joda-money:1.0.4")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

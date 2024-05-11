@@ -5,13 +5,16 @@ public class ListItem {
     private String description;
     private int icon;
     private String amount;
+    private String category;
 
-    public ListItem(String title, String description, int icon, String amount) {
+    public ListItem(String title, String description, int icon, String amount, String category) {
         this.title = title;
         this.description = description;
         this.icon = icon;
         this.amount = amount;
+        this.category = category;
     }
+
 
     public String getTitle() {
         return title;
@@ -27,5 +30,8 @@ public class ListItem {
 
     public String getAmount() {
         return amount;
+    }
+    public String getCategory() {
+        return category;
     }
 }

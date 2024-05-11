@@ -1,10 +1,19 @@
 package com.example.budgetbuddy.income;
 
 import static com.example.budgetbuddy.currency.CurrencyUtils2.fetchCurrencies;
+import static com.example.budgetbuddy.income.IncomeAlarmReceiver.CHANNEL_ID;
+import static com.example.budgetbuddy.income.IncomeAlarmReceiver.NOTIFICATION_ID;
 
+import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +23,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -28,6 +41,7 @@ import com.example.budgetbuddy.SharedViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class AddIncomeFragment extends Fragment {
@@ -48,6 +62,9 @@ public class AddIncomeFragment extends Fragment {
     private Button save;
     private ImageView close;
     private SharedViewModel sharedViewModel;
+    private RadioGroup repeatFrequencyGroup;
+    private AlarmManager alarmManager;
+    private PendingIntent alarmIntent;
 
 
     public AddIncomeFragment() {
@@ -60,6 +77,7 @@ public class AddIncomeFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
     }
 
     @Override
@@ -103,6 +121,7 @@ public class AddIncomeFragment extends Fragment {
         amountEditText = view.findViewById(R.id.amount_edit_text);
         TextView amountTextView = view.findViewById(R.id.amount_text_view);
         close = view.findViewById(R.id.close_income);
+        repeatFrequencyGroup = view.findViewById(R.id.repeat_frequency_group);
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +159,13 @@ public class AddIncomeFragment extends Fragment {
                 getParentFragmentManager().popBackStack();
             }
         });
+        alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+
+        Intent alarmIntent = new Intent(requireContext(), IncomeAlarmReceiver.class);
+        alarmIntent.setAction("com.example.budgetbuddy.income.INCOME_ALARM");
+        this.alarmIntent = PendingIntent.getBroadcast(requireContext(), 0, alarmIntent, PendingIntent.FLAG_MUTABLE);
+
+        askUserToContinue();
     }
 
     private void showCategoryDialog() {
@@ -173,6 +199,18 @@ public class AddIncomeFragment extends Fragment {
     private void saveIncome() {
         String amountStr = amountEditText.getText().toString().trim();
         String description = descEditText.getText().toString().trim();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        if (auth.getCurrentUser() == null) {
+            // User is not authenticated, handle accordingly
+            return;
+        }
+
+
+        if (userId == null) {
+            // User ID is null, handle accordingly
+            return;
+        }
 
         if (amountStr.isEmpty()) {
             amountEditText.setError("Amount is required");
@@ -200,7 +238,7 @@ public class AddIncomeFragment extends Fragment {
         double amount = Double.parseDouble(parts[0]);
 
 
-        Income income = new Income(amount, selectedCategory.getCategoryName(), description, selectedCurrency);
+        Income income = new Income(amount, selectedCategory.getCategoryName(), description, selectedCurrency, userId);
         db.collection("income")
                 .add(income)
                 .addOnSuccessListener(documentReference -> {
@@ -208,7 +246,6 @@ public class AddIncomeFragment extends Fragment {
                     List<Income> updatedIncomeList = sharedViewModel.getIncomeList().getValue();
                     updatedIncomeList.add(income);
                     sharedViewModel.setIncomeList(updatedIncomeList);
-
 
 
                     if (getActivity() != null) {
@@ -220,8 +257,106 @@ public class AddIncomeFragment extends Fragment {
                         Toast.makeText(getActivity(), "Failed to save income: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        int selectedFrequencyId = repeatFrequencyGroup.getCheckedRadioButtonId();
+        String selectedFrequency = "";
+
+        if (selectedFrequencyId == R.id.every_day_radio_button) {
+            selectedFrequency = "Every day";
+            scheduleIncomeAddition(selectedFrequency);
+        } else if (selectedFrequencyId == R.id.weekly_radio_button) {
+            selectedFrequency = "Weekly";
+            scheduleIncomeAddition(selectedFrequency);
+        } else if (selectedFrequencyId == R.id.monthly_radio_button) {
+            selectedFrequency = "Monthly";
+            scheduleIncomeAddition(selectedFrequency);
+        } else if (selectedFrequencyId == R.id.annually_radio_button) {
+            selectedFrequency = "Annually";
+            scheduleIncomeAddition(selectedFrequency);
+        } else {
+            // Handle default case
+        }
     }
 
+
+    private void scheduleIncomeAddition(String frequency) {
+        // Get the interval based on the selected frequency
+        long intervalMillis = getIntervalMillisFromFrequency(frequency);
+
+        // Schedule the periodic task using AlarmManager
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), intervalMillis, alarmIntent);
+    }
+
+    private long getIntervalMillisFromFrequency(String frequency) {
+        switch (frequency) {
+            case "Every day":
+                return AlarmManager.INTERVAL_DAY;
+            case "Weekly":
+                return AlarmManager.INTERVAL_DAY * 7; // 1 week
+            case "Monthly":
+                // Calculate interval until the next month
+                Calendar nextMonth = Calendar.getInstance();
+                nextMonth.add(Calendar.MONTH, 1);
+                nextMonth.set(Calendar.DAY_OF_MONTH, nextMonth.get(Calendar.DAY_OF_MONTH)); // Same day of the month
+                nextMonth.set(Calendar.HOUR_OF_DAY, nextMonth.get(Calendar.HOUR_OF_DAY)); // Same hour
+                nextMonth.set(Calendar.MINUTE, nextMonth.get(Calendar.MINUTE)); // Same minute
+                nextMonth.set(Calendar.SECOND, nextMonth.get(Calendar.SECOND)); // Same second
+                nextMonth.set(Calendar.MILLISECOND, nextMonth.get(Calendar.MILLISECOND)); // Same millisecond
+                return nextMonth.getTimeInMillis() - System.currentTimeMillis();
+            case "Annually":
+                // Calculate interval until the next year
+                Calendar nextYear = Calendar.getInstance();
+                nextYear.add(Calendar.YEAR, 1);
+                nextYear.set(Calendar.MONTH, nextYear.get(Calendar.MONTH)); // Same month
+                nextYear.set(Calendar.DAY_OF_MONTH, nextYear.get(Calendar.DAY_OF_MONTH)); // Same day of the month
+                nextYear.set(Calendar.HOUR_OF_DAY, nextYear.get(Calendar.HOUR_OF_DAY)); // Same hour
+                nextYear.set(Calendar.MINUTE, nextYear.get(Calendar.MINUTE)); // Same minute
+                nextYear.set(Calendar.SECOND, nextYear.get(Calendar.SECOND)); // Same second
+                nextYear.set(Calendar.MILLISECOND, nextYear.get(Calendar.MILLISECOND)); // Same millisecond
+                return nextYear.getTimeInMillis() - System.currentTimeMillis();
+            default:
+                return AlarmManager.INTERVAL_DAY; // Default to daily
+        }
+    }
+
+    private void askUserToContinue() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Continue adding income?")
+                .setContentText("Do you want to continue adding income with the same details?")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .addAction(R.drawable.baseline_check_24, "Continue", createContinueIntent())
+                .addAction(R.drawable.close, "Cancel", createCancelIntent());
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+
+        // Check if the app has the necessary permission
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // Handle the case where the permission is not granted
+            // You can request the permission here or handle the absence of permission in another way
+            // For now, I'll just log a message
+            Log.e("Notification", "Permission not granted");
+            return;
+        }
+
+        // If permission is granted, proceed to send the notification
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+
+
+
+    private PendingIntent createContinueIntent() {
+        Intent continueIntent = new Intent(requireContext(), IncomeAlarmReceiver.class);
+        continueIntent.setAction("continue_action");
+        return PendingIntent.getBroadcast(requireContext(), 0, continueIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+    }
+
+    private PendingIntent createCancelIntent() {
+        Intent cancelIntent = new Intent(requireContext(), IncomeAlarmReceiver.class);
+        cancelIntent.setAction("cancel_action");
+        return PendingIntent.getBroadcast(requireContext(), 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+    }
 
 
 }

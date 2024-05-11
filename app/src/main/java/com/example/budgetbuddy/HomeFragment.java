@@ -98,7 +98,6 @@ public class HomeFragment extends Fragment  {
         combinedAdapter.setOnIncomeItemClickListener(new CombinedAdapter.OnIncomeItemClickListener() {
             @Override
             public void onIncomeItemClick(Income income) {
-                // Navigate to IncomeFragment
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
                     activity.loadFragment(new IncomeFragment(), false);

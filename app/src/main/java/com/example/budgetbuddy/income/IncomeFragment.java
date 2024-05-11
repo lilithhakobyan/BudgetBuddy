@@ -41,7 +41,7 @@ public class IncomeFragment extends Fragment implements IncomeAdapter.OnDeleteCl
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mContext = context; // Store the context when fragment is attached
+        mContext = context;
     }
 
     @Override

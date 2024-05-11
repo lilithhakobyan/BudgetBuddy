@@ -28,7 +28,7 @@ public class CurrencyUtils {
         OkHttpClient client = new OkHttpClient();
 
         // Replace "YOUR_API_KEY" with your actual ExchangeRate-API key
-        String apiKey = "ea212fedb9-7368eabcea-scpiw5";
+        String apiKey = "890fc42dbe-019a35878b-sd4rjo";
 
         Request request = new Request.Builder()
                 .url("https://api.fastforex.io/currencies?api_key=" + apiKey)

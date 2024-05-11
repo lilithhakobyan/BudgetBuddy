@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,8 +29,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.budgetbuddy.currency.CurrencyUtils2;
 import com.example.budgetbuddy.R;
+import com.example.budgetbuddy.currency.CurrencyUtils2;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -50,7 +49,6 @@ public class AddReminderFragment extends Fragment {
     private Spinner currencySpinner;
     private EditText describeReminderEditText, amountEditText;
     private TextView timeRemText;
-    private Spinner choiceSpinner;
     private FirebaseFirestore db;
     private Button DateButton;
     private Button TimeButton;
@@ -110,36 +108,14 @@ public class AddReminderFragment extends Fragment {
             alertDialogBuilder.show();
         });
 
+
+
         ImageView imageView = view.findViewById(R.id.close_addrem);
         imageView.setOnClickListener(v -> showAlertDialog());
 
         return view;
     }
 
-    private void addEventToCalendar() {
-        // Get the current date and time
-        Calendar beginTime = Calendar.getInstance();
-        Calendar endTime = Calendar.getInstance();
-        endTime.add(Calendar.HOUR_OF_DAY, 1);
-
-        // Create an intent to add an event to the calendar
-        Intent intent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
-                .putExtra(CalendarContract.Events.TITLE, describeReminderEditText.getText().toString())
-                .putExtra(CalendarContract.Events.DESCRIPTION, amountEditText.getText().toString())
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Your location")
-                .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
-
-        // Check if there's an app to handle the intent
-        if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-
-            Toast.makeText(requireContext(), "No calendar app found", Toast.LENGTH_SHORT).show();
-        }
-    }
 
     private long saveReminderToFirestore() {
         FirebaseUser user = auth.getCurrentUser();
@@ -157,7 +133,7 @@ public class AddReminderFragment extends Fragment {
         String dateText = dateRemText.getText().toString();
         String timeText = timeRemText.getText().toString();
         String amountText = amountEditText.getText().toString();
-        String selectedChoice = choiceSpinner.getSelectedItem().toString();
+        String selectedChoice = currencySpinner.getSelectedItem().toString();
 
         String dateTimeString = dateText + " " + timeText;
         long dateTime = convertStringToTimestamp(dateTimeString);
@@ -325,6 +301,8 @@ public class AddReminderFragment extends Fragment {
     private PendingIntent pendingIntent;
     @SuppressLint("ScheduleExactAlarm")
     private void scheduleReminder(long timestamp) {
+        Log.d(TAG, "Scheduling reminder at timestamp: " + timestamp);
+
         AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) {
             Log.e(TAG, "AlarmManager is null");
@@ -361,4 +339,17 @@ public class AddReminderFragment extends Fragment {
             }
         }
     }
+
+    public void scheduleLocalNotification(long timeInMillis) {
+
+        Intent notificationIntent = new Intent(requireContext(), ReminderReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        }
+    }
+
+
 }

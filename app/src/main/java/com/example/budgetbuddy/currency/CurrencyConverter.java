@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,11 +24,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.budgetbuddy.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class CurrencyConverter extends AppCompatActivity {
@@ -79,7 +79,7 @@ public class CurrencyConverter extends AppCompatActivity {
         edit_amount_to_convert_value = findViewById(R.id.edit_amount_to_convert_value);
 
         arraylist = new ArrayList<>();
-        for(String i : currency) {
+        for (String i : currency) {
             arraylist.add(i);
         }
 
@@ -99,7 +99,8 @@ public class CurrencyConverter extends AppCompatActivity {
 
                 edittext.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -107,7 +108,8 @@ public class CurrencyConverter extends AppCompatActivity {
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {}
+                    public void afterTextChanged(Editable s) {
+                    }
                 });
                 listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -136,7 +138,8 @@ public class CurrencyConverter extends AppCompatActivity {
 
                 edittext.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -144,7 +147,8 @@ public class CurrencyConverter extends AppCompatActivity {
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {}
+                    public void afterTextChanged(Editable s) {
+                    }
                 });
                 listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -161,12 +165,12 @@ public class CurrencyConverter extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    String fromCurrency = convert_from_dropdown_menu.getText().toString();
                     Double amountToConvert = Double.valueOf(edit_amount_to_convert_value.getText().toString());
-                    Log.d("CurrencyConverter", "Amount to convert: " + amountToConvert);
-                    Log.d("CurrencyConverter", "From: " + convert_from_value + ", To: " + convert_to_value);
-                    getConversionRate(convert_from_value, convert_to_value, amountToConvert);
-                } catch(Exception e) {
+                    getAggregateBars(fromCurrency, "iylgiN45itiq3b02299RC_09DGmbaJ_j", amountToConvert);
+                } catch (Exception e) {
                     e.printStackTrace();
+                    handleError("Invalid input");
                 }
             }
         });
@@ -180,35 +184,52 @@ public class CurrencyConverter extends AppCompatActivity {
         });
     }
 
-    public void getConversionRate(String convert_from_value, String convert_to_value, Double amountToConvert) {
-        // Make sure to replace "YOUR_API_KEY" with your actual API key from FastForex
-        String apiKey = "3ac52919a6-43e23b931c-sc73tb";
-        String url = "https://api.fastforex.io/convert?from=" + convert_from_value + "&to=" + convert_to_value + "&amount=" + amountToConvert + "&api_key=" + apiKey;
+    public void getAggregateBars(String fromCurrency, String apiKey, final Double amountToConvert) {
+        String tickerSymbol = "AAPL";
+        String date = "2023-01-09";
+        apiKey = "iylgiN45itiq3b02299RC_09DGmbaJ_j";
+
+        String url = "https://api.polygon.io/v2/aggs/ticker/" + tickerSymbol + "/range/1/day/" + date + "/" + date + "?apiKey=" + apiKey;
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+
             @Override
             public void onResponse(String response) {
+                Log.d("CurrencyConverter", "API Response: " + response);
+
                 try {
                     JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.has("results")) {
+                        JSONArray results = jsonObject.getJSONArray("results");
+                        if (results.length() > 0) {
+                            JSONObject firstResult = results.getJSONObject(0);
+                            double exchangeRate = firstResult.getDouble("c");
+                            Log.d("CurrencyConverter", "Exchange Rate: " + exchangeRate);
 
-                    // Extract the conversion rate and calculate the converted amount manually
-                    JSONObject resultObject = jsonObject.getJSONObject("result");
-                    double conversionRate = resultObject.getDouble("rate");
-                    double convertedAmount = amountToConvert * conversionRate;
+                            double convertedAmount = amountToConvert * exchangeRate;
+                            Log.d("CurrencyConverter", "Converted Amount: " + convertedAmount);
 
-                    // Update the UI with the converted value
-                    conversion_value = String.valueOf(convertedAmount);
-                    conversion_rate.setText(conversion_value);
+                            displayConversionResult(convertedAmount);
+                        } else {
+                            handleError("No exchange rate data available");
+                        }
+                    } else {
+                        handleError("Invalid API response format");
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    handleError("Error parsing API response");
                 }
             }
+
+
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                handleError("Network error occurred");
             }
         });
 
@@ -217,12 +238,16 @@ public class CurrencyConverter extends AppCompatActivity {
 
 
 
-    public static double round(double value, int currency) {
-        if(currency < 0) throw new IllegalArgumentException();
-        BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(currency, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+
+    // Add these methods for displaying results and handling errors
+    private void displayConversionResult(double convertedAmount) {
+        conversion_rate.setText(String.valueOf(convertedAmount));
     }
+
+    private void handleError(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
 
     public void CloseCurrencyConverter() {
         finish();

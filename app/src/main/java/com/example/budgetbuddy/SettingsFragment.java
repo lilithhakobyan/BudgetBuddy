@@ -61,6 +61,8 @@ public class SettingsFragment extends Fragment {
     }
 
     private void signOut() {
+        DataManager.getInstance().clearIncomeList();
+        DataManager.getInstance().clearExpenseList();
         FirebaseAuth.getInstance().signOut();
         getActivity().finish();
     }

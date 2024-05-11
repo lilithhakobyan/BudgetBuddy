@@ -36,7 +36,9 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenseList.get(position);
-        holder.bind(expense);
+        if (expense != null) {
+            holder.bind(expense);
+        }
     }
 
     @Override
@@ -44,13 +46,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         return expenseList.size();
     }
 
-    public void setExpenses(List<Expense> expenses) {
-        expenseList = expenses;
-        notifyDataSetChanged();
-    }
-
     public void setExpenseList(List<Expense> expenses) {
-        this.expenseList = expenses;
+        expenseList = expenses;
         notifyDataSetChanged();
     }
 
@@ -64,10 +61,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
             categoryTextView = itemView.findViewById(R.id.category_text_view);
             amountTextView = itemView.findViewById(R.id.amount_text_view);
             descriptionTextView = itemView.findViewById(R.id.description_text_view);
-
-
         }
-
 
         public void bind(Expense expense) {
             categoryTextView.setText(expense.getCategory());
@@ -79,5 +73,4 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     public interface OnDeleteClickListener {
         void onDeleteClick(int position);
     }
-
 }

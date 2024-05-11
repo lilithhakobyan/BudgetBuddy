@@ -4,44 +4,60 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.budgetbuddy.ListItem;
 import com.example.budgetbuddy.R;
 
 import java.util.List;
 
-public class MyListAdapter extends ArrayAdapter<ListItem> {
+public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder> {
+
+    private Context context;
+    private List<ListItem> items;
 
     public MyListAdapter(Context context, List<ListItem> items) {
-        super(context, 0, items);
+        this.context = context;
+        this.items = items;
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        ListItem item = items.get(position);
+        holder.titleTextView.setText(item.getTitle());
+        holder.descriptionTextView.setText(item.getDescription());
+        holder.amountTextView.setText(item.getAmount());
+        holder.iconImageView.setImageResource(item.getIcon());
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView titleTextView;
+        TextView descriptionTextView;
+        TextView amountTextView;
+        ImageView iconImageView;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            titleTextView = itemView.findViewById(R.id.title);
+            descriptionTextView = itemView.findViewById(R.id.description_text_view_d);
+            amountTextView = itemView.findViewById(R.id.amount_text_view_d);
+            iconImageView = itemView.findViewById(R.id.i);
         }
-
-        ListItem item = getItem(position);
-        TextView titleTextView = convertView.findViewById(R.id.titleTextView);
-        TextView descriptionTextView = convertView.findViewById(R.id.descriptionTextView);
-        TextView amountTextView = convertView.findViewById(R.id.amount_d);
-        ImageView iconImageView = convertView.findViewById(R.id.iconImageView);
-
-        if (item != null) {
-            titleTextView.setText(item.getTitle());
-            descriptionTextView.setText(item.getDescription());
-            amountTextView.setText(item.getAmount()); // Set the amount text
-            iconImageView.setImageResource(item.getIcon());
-        }
-
-        return convertView;
     }
 }

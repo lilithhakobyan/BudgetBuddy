@@ -1,62 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".demo.DemoHomeFragment"
+    tools:context=".demo.DemoActivity"
     android:background="@android:color/white">
 
-    <LinearLayout
-        android:id="@+id/buttonLayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@drawable/rounded_bcg"
+        android:id="@+id/i_l"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/balanceTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="NotSibling">
 
         <TextView
+            android:id="@+id/home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Home"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/balanceTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/balanceTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Balance"
-            android:layout_marginTop="40dp"
+            android:textColor="@color/white"
             android:layout_marginStart="20dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@+id/home"/>
+
+
 
         <Button
-            android:id="@+id/income_d"
+            android:id="@+id/income_demo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:backgroundTint="@color/dark_blue"
+            android:backgroundTint="@color/white"
             android:text="@string/income"
-            app:icon="@drawable/baseline_attach_money_24" />
+            android:textColor="@color/dark_blue"
+            android:drawablePadding="8dp"
+
+            app:layout_constraintTop_toBottomOf="@id/balanceTextView"/>
 
         <Button
-            android:id="@+id/expense_d"
+            android:id="@+id/expense_demo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:backgroundTint="@color/dark_blue"
+            android:layout_marginBottom="30dp"
+            android:backgroundTint="@color/white"
             android:text="@string/expense"
-            app:icon="@drawable/baseline_account_balance_wallet_24" />
+            android:textColor="@color/dark_blue"
+            app:layout_constraintTop_toBottomOf="@+id/income_demo"/>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ListView
-        android:id="@+id/list_view"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_demo"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="60dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/i_l"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-    </ListView>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
