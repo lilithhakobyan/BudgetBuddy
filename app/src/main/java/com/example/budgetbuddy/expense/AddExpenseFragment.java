@@ -183,7 +183,6 @@ public class AddExpenseFragment extends Fragment {
             return;
         }
 
-        // Check if a category is selected
         if (selectedCategory == null) {
             Toast.makeText(requireContext(), "Please select a category", Toast.LENGTH_SHORT).show();
             return;

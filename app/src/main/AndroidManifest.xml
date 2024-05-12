@@ -47,17 +47,15 @@
         <activity
             android:name=".NotificationActivity"
             android:exported="true" />
-
         <receiver
             android:name=".reminder.ReminderReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.example.budgetbuddy.ACTION_SET_REMINDER" />
             </intent-filter>
         </receiver>
+
 
         <activity
             android:name=".demo.DemoActivity"

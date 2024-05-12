@@ -88,10 +88,7 @@ public class AddReminderFragment extends Fragment {
         TimeButton.setOnClickListener(v -> openTimePicker());
 
         submitButton.setOnClickListener(v -> {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireContext());
-            alertDialogBuilder.setTitle("Add Reminder to Calendar");
-            alertDialogBuilder.setMessage("Do you want to add this reminder to your calendar?");
-            alertDialogBuilder.setPositiveButton("Yes", (dialog, which) -> {
+
                 long timestamp = saveReminderToFirestore();
                 if (timestamp != 0) {
                     scheduleReminder(timestamp);
@@ -101,14 +98,6 @@ public class AddReminderFragment extends Fragment {
                     Toast.makeText(requireContext(), "Error saving reminder", Toast.LENGTH_SHORT).show();
                 }
             });
-            alertDialogBuilder.setNegativeButton("No", (dialog, which) -> {
-                cancelReminder();
-                Toast.makeText(requireContext(), "Reminder not added to calendar", Toast.LENGTH_SHORT).show();
-            });
-            alertDialogBuilder.show();
-        });
-
-
 
         ImageView imageView = view.findViewById(R.id.close_addrem);
         imageView.setOnClickListener(v -> showAlertDialog());
@@ -311,6 +300,7 @@ public class AddReminderFragment extends Fragment {
 
         Intent intent = new Intent(requireContext(), ReminderReceiver.class);
         intent.putExtra("REMINDER_MESSAGE", describeReminderEditText.getText().toString());
+        intent.putExtra("REMINDER_TRIGGER_TIME", timestamp);
 
         pendingIntent = PendingIntent.getBroadcast(
                 requireContext(),

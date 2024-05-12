@@ -1,6 +1,5 @@
 package com.example.budgetbuddy.reminder;
 
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,6 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+
+import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.NotificationActivity;
 
 public class ReminderReceiver extends BroadcastReceiver {
@@ -24,55 +26,68 @@ public class ReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Reminder received.");
 
-        // Check if the intent action is for a reminder
         if (intent.getAction() != null && intent.getAction().equals("com.example.budgetbuddy.ACTION_DELETE_REMINDER")) {
             Log.d(TAG, "Reminder deleted, skipping notification.");
-            return; // Skip notification if reminder is deleted
+            return;
         }
 
-        String message = intent.getStringExtra("REMINDER_MESSAGE");
-        long triggerTime = intent.getLongExtra("REMINDER_TIME", 0); // Get the trigger time
+        String reminderMessage = intent.getStringExtra("REMINDER_MESSAGE");
+        if (reminderMessage == null) {
+            Log.e(TAG, "Reminder message is null.");
+            return;
+        }
 
-        if (message != null && triggerTime != 0) {
-            Log.d(TAG, "Received message: " + message);
+        // Check if the trigger time is null
+        long triggerTime = intent.getLongExtra("REMINDER_TRIGGER_TIME", 0);
+        if (triggerTime == 0) {
+            Log.e(TAG, "Reminder trigger time is null.");
+            return;
+        }
 
-            // Create an explicit intent for the notification activity
-            Intent notificationIntent = new Intent(context, NotificationActivity.class);
-            notificationIntent.putExtra("data", message);
+        // Build the notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.notifications_icon)
+                .setContentTitle("Reminder")
+                .setContentText(reminderMessage)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    context,
-                    NOTIFICATION_ID,
-                    notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE
+        Intent notificationIntent = new Intent(context, NotificationActivity.class);
+        notificationIntent.putExtra("data", reminderMessage);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                NOTIFICATION_ID,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+        builder.setContentIntent(pendingIntent);
+
+        // Set sound for the notification
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(defaultSoundUri);
+
+        // Create the notification channel (required for Android Oreo and above)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH
             );
-
-            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-            // Create the notification channel (required for Android Oreo and above)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(
-                        CHANNEL_ID,
-                        CHANNEL_NAME,
-                        NotificationManager.IMPORTANCE_HIGH
-                );
-                NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-                if (notificationManager != null) {
-                    notificationManager.createNotificationChannel(channel);
-                } else {
-                    Log.e(TAG, "NotificationManager is null.");
-                }
-            }
-
-            // Schedule the notification using AlarmManager
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            if (alarmManager != null) {
-                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
             } else {
-                Log.e(TAG, "AlarmManager is null.");
+                Log.e(TAG, "NotificationManager is null.");
             }
+        }
+
+        // Display the notification
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
         } else {
-            Log.e(TAG, "Message or trigger time is null.");
+            Log.e(TAG, "NotificationManager is null.");
         }
     }
 }
