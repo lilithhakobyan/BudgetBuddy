@@ -54,7 +54,6 @@ public class AddReminderFragment extends Fragment {
     private Button TimeButton;
     private TextView dateRemText;
     private FirebaseAuth auth;
-    private long dateTime;
 
     private static final int ALARM_REQUEST_CODE = 123;
     private Context mContext;
@@ -62,6 +61,8 @@ public class AddReminderFragment extends Fragment {
     private static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
     private TimePicker timePicker;
     private Button submitButton;
+    private TextView amountText;
+    private TextView currencyText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,7 +95,6 @@ public class AddReminderFragment extends Fragment {
                     scheduleReminder(timestamp);
                     openReminderFragment();
                 } else {
-                    // Handle error case where timestamp couldn't be generated
                     Toast.makeText(requireContext(), "Error saving reminder", Toast.LENGTH_SHORT).show();
                 }
             });

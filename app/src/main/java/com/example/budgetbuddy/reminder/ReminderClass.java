@@ -84,4 +84,6 @@ public class ReminderClass implements Serializable {
     public String getMessage() {
         return message;
     }
+
+
 }

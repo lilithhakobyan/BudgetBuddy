@@ -1,16 +1,11 @@
 package com.example.budgetbuddy.reminder;
 
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +15,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -36,9 +30,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 
@@ -76,7 +67,6 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
         view.findViewById(R.id.addReminder_button).setOnClickListener(v -> addReminderFragment());
 
         fetchRemindersFromFirestore();
-        retrieveFCMToken();
 
         swipeToDeleteCallback = new SwipeToDeleteCallback();
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallback);
@@ -89,50 +79,20 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Check if the "no reminders" layout is shown
         checkNoRemindersViewVisibility(view);
     }
 
-    private void displayNotification(String title, String message) {
-        // Create a notification manager
-        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Check if the Android version is Oreo or higher
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create a notification channel
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Reminder Channel", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.notifications_icon)
-                .setContentTitle(title)
-                .setContentText(message) // Set the message
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        // Display the notification
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
-    }
 
     private void checkNoRemindersViewVisibility(View parentView) {
         ViewGroup parent = (ViewGroup) parentView.getParent();
         @SuppressLint("ResourceType") View noReminderView = parent.findViewById(R.layout.layout_no_reminders);
         if (noReminderView != null) {
             isNoRemindersViewShown = true;
-            animateArrow();
         } else {
             isNoRemindersViewShown = false;
         }
     }
 
-    private void animateArrow() {
-        if (isNoRemindersViewShown) {
-            ObjectAnimator animator = ObjectAnimator.ofFloat(arrowImageView, "translationY", newTopMargin);
-            animator.setDuration(animationDuration);
-            animator.start();
-        }
-    }
 
     @Override
     public void onDestroyView() {
@@ -154,7 +114,7 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 ReminderClass reminder = document.toObject(ReminderClass.class);
-                                reminder.setDocumentId(document.getId()); // Set the documentId field
+                                reminder.setDocumentId(document.getId());
                                 reminderList.add(reminder);
                                 Log.d(TAG, "Reminder retrieved: " + reminder.getTitle());
                             }
@@ -189,17 +149,6 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
         Log.d(TAG, "addReminderFragment() called");
     }
 
-    private void retrieveFCMToken() {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        String token = task.getResult();
-                        Log.d(TAG, "FCM Token: " + token);
-                    } else {
-                        Log.w(TAG, "Fetching FCM token failed", task.getException());
-                    }
-                });
-    }
 
     @Override
     public void onItemClick(ReminderClass reminder) {
@@ -323,25 +272,5 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
         }
     }
 
-    public class MyFirebaseMessagingService extends FirebaseMessagingService {
-        private static final String TAG = "MyFirebaseMessagingServ";
-
-        @Override
-        public void onMessageReceived(RemoteMessage remoteMessage) {
-            super.onMessageReceived(remoteMessage);
-
-            // Log the received message payload
-            Log.d(TAG, "Message received from: " + remoteMessage.getFrom());
-            if (remoteMessage.getData().size() > 0) {
-                Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-            }
-
-            // Check if message contains a notification payload
-            if (remoteMessage.getNotification() != null) {
-                Log.d(TAG, "Message notification body: " + remoteMessage.getNotification().getBody());
-                // You can also access other notification properties like title, icon, etc.
-            }
-        }
-    }
 
 }

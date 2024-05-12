@@ -42,17 +42,29 @@
             android:textSize="14sp"
             android:textColor="@android:color/black"/>
 
+
+
         <TextView
-            android:id="@+id/repeatText"
-            android:layout_width="match_parent"
+            android:id="@+id/amountText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Repeating"
+            android:text="Amount:100"
             android:textStyle="italic"
-            android:layout_below="@+id/textTime"
+            android:layout_below="@id/textTime"
             android:textSize="14sp"
             android:textColor="@android:color/black"/>
 
 
+        <TextView
+            android:id="@+id/currencyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" USD"
+            android:textStyle="italic"
+            android:layout_toEndOf="@id/amountText"
+            android:layout_below="@id/textTime"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"/>
 
     </RelativeLayout>
 

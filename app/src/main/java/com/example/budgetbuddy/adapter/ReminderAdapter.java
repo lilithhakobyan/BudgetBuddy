@@ -50,6 +50,9 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         holder.textDate.setText(formatDate(reminder.getDateTime()));
         holder.textTime.setText(formatTime(reminder.getDateTime()));
 
+        holder.textAmount.setText(reminder.getAmount());
+        holder.textCurrency.setText(reminder.getChoice());
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +62,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
             }
         });
     }
+
 
     @Override
     public int getItemCount() {
@@ -79,12 +83,16 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         public TextView textTitle;
         public TextView textDate;
         public TextView textTime;
+        public TextView textAmount;
+        public TextView textCurrency;
 
         public ReminderViewHolder(View itemView) {
             super(itemView);
             textTitle = itemView.findViewById(R.id.textTitle);
             textDate = itemView.findViewById(R.id.textDate);
             textTime = itemView.findViewById(R.id.textTime);
+            textAmount = itemView.findViewById(R.id.amountText);
+            textCurrency = itemView.findViewById(R.id.currencyText);
         }
     }
 }
