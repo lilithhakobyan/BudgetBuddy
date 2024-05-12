@@ -24,7 +24,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.budgetbuddy.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -166,8 +165,9 @@ public class CurrencyConverter extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     String fromCurrency = convert_from_dropdown_menu.getText().toString();
+                    String toCurrency = convert_to_dropdown_menu.getText().toString();
                     Double amountToConvert = Double.valueOf(edit_amount_to_convert_value.getText().toString());
-                    getAggregateBars(fromCurrency, "iylgiN45itiq3b02299RC_09DGmbaJ_j", amountToConvert);
+                    getExchangeRates(fromCurrency, toCurrency, amountToConvert);
                 } catch (Exception e) {
                     e.printStackTrace();
                     handleError("Invalid input");
@@ -184,47 +184,35 @@ public class CurrencyConverter extends AppCompatActivity {
         });
     }
 
-    public void getAggregateBars(String fromCurrency, String apiKey, final Double amountToConvert) {
-        String tickerSymbol = "AAPL";
-        String date = "2023-01-09";
-        apiKey = "iylgiN45itiq3b02299RC_09DGmbaJ_j";
-
-        String url = "https://api.polygon.io/v2/aggs/ticker/" + tickerSymbol + "/range/1/day/" + date + "/" + date + "?apiKey=" + apiKey;
+    public void getExchangeRates(String fromCurrency, String toCurrency, final Double amountToConvert) {
+        String apiKey = "N0IHQ8QOBHA9EXVG";
+        String apiUrl = "https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=" + fromCurrency + "&to_symbol=" + toCurrency + "&apikey=" + apiKey;
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, apiUrl, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
                 Log.d("CurrencyConverter", "API Response: " + response);
 
                 try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    if (jsonObject.has("results")) {
-                        JSONArray results = jsonObject.getJSONArray("results");
-                        if (results.length() > 0) {
-                            JSONObject firstResult = results.getJSONObject(0);
-                            double exchangeRate = firstResult.getDouble("c");
-                            Log.d("CurrencyConverter", "Exchange Rate: " + exchangeRate);
+                    // Parse the JSON response to extract exchange rate data
+                    JSONObject jsonResponse = new JSONObject(response);
+                    JSONObject timeSeriesData = jsonResponse.getJSONObject("Time Series FX (Daily)");
 
-                            double convertedAmount = amountToConvert * exchangeRate;
-                            Log.d("CurrencyConverter", "Converted Amount: " + convertedAmount);
+                    String latestDate = timeSeriesData.keys().next();
+                    JSONObject latestRateData = timeSeriesData.getJSONObject(latestDate);
+                    double exchangeRate = latestRateData.getDouble("4. close");
 
-                            displayConversionResult(convertedAmount);
-                        } else {
-                            handleError("No exchange rate data available");
-                        }
-                    } else {
-                        handleError("Invalid API response format");
-                    }
+                    // Perform conversion based on selected currencies and rates
+                    double convertedAmount = amountToConvert * exchangeRate;
+                    displayConversionResult(convertedAmount);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     handleError("Error parsing API response");
                 }
             }
-
-
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -237,18 +225,17 @@ public class CurrencyConverter extends AppCompatActivity {
     }
 
 
-
-
-    // Add these methods for displaying results and handling errors
+    // Method to display conversion result
     private void displayConversionResult(double convertedAmount) {
         conversion_rate.setText(String.valueOf(convertedAmount));
     }
 
+    // Method to handle errors
     private void handleError(String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
-
+    // Method to close the activity
     public void CloseCurrencyConverter() {
         finish();
     }
