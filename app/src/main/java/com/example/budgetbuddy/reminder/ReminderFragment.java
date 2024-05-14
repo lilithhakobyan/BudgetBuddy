@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,15 +38,8 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
     private ArrayList<ReminderClass> reminderList;
     private ReminderAdapter adapter;
     private SwipeToDeleteCallback swipeToDeleteCallback;
-    private ImageView arrowImageView;
-    private int initialTopMargin;
-    private int newTopMargin;
-    private int animationDuration = 1000;
-    private int delay = 5000;
 
     private static final String TAG = "ReminderFragment";
-    private static final int NOTIFICATION_ID = 123;
-    private static final String CHANNEL_ID = "reminder_channel";
 
     private boolean isNoRemindersViewShown = false;
 
@@ -223,7 +215,6 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
                     iconRightOnRed = itemView.getRight() - iconMargin;
                 }
 
-                // Draw the icon
                 deleteIcon.setBounds(iconLeftOnRed, iconTop, iconRightOnRed, iconBottom);
                 deleteIcon.draw(c);
             }

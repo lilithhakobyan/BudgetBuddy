@@ -112,6 +112,8 @@ public class StatisticsFragment extends Fragment {
                 getResources().getColor(R.color.main)});
         PieData data = new PieData(dataSet);
 
+        dataSet.setDrawValues(false);
+
         pieChart.setData(data);
         pieChart.getDescription().setEnabled(false);
         pieChart.setCenterText("Incomes and Expenses");

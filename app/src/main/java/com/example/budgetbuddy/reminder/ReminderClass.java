@@ -22,8 +22,6 @@ public class ReminderClass implements Serializable {
         this.amount = amount;
         this.choice = choice;
         this.settled = settled;
-
-        // Generate unique ID based on title and timestamp
         this.uniqueId = generateUniqueId(title, dateTime);
         this.documentId = "";
     }
