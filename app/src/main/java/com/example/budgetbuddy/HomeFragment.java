@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment  {
             public void onClick(View v) {
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    activity.loadFragment(new IncomeFragment(), false);
+                    activity.loadFragment(new IncomeFragment());
                 }
             }
         });
@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment  {
             public void onClick(View v) {
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    activity.loadFragment(new ExpenseFragment(), false);
+                    activity.loadFragment(new ExpenseFragment());
                 }
             }
         });
@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment  {
             public void onIncomeItemClick(Income income) {
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    activity.loadFragment(new IncomeFragment(), false);
+                    activity.loadFragment(new IncomeFragment());
                 }
             }
         });
@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment  {
             public void onExpenseItemClick(Expense expense) {
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    activity.loadFragment(new ExpenseFragment(), false);
+                    activity.loadFragment(new ExpenseFragment());
                 }
             }
         });

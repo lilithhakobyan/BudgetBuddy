@@ -14,13 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -92,7 +92,7 @@ public class AddExpenseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        LinearLayout expenseCategoryLayout = view.findViewById(R.id.expense_category);
+        ConstraintLayout expenseCategoryLayout = view.findViewById(R.id.expense_layout);
         selectCategoryTextView = view.findViewById(R.id.select_category);
         selectIconButton = view.findViewById(R.id.select_icon);
         save = view.findViewById(R.id.button_save_expense);

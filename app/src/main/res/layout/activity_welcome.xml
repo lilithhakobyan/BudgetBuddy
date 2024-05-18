@@ -1,12 +1,12 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bcg"
     android:orientation="vertical"
-    android:paddingTop="20dp"
-    >
+    android:paddingTop="20dp">
 
     <View
         android:id="@+id/blue_half"
@@ -48,32 +48,33 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/blue_half" />
+        app:layout_constraintTop_toBottomOf="@+id/blue_half"/>
 
     <Button
         android:id="@+id/log_in"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="180dp"
         android:layout_marginEnd="20dp"
         android:backgroundTint="@color/dark_blue"
         android:text="Log in"
+        app:layout_constraintWidth_percent="0.85"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/view" />
+        app:layout_constraintTop_toTopOf="@+id/view"/>
 
     <Button
         android:id="@+id/skip_for_now"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:backgroundTint="@color/dark_blue"
         android:text="Skip for now"
+        app:layout_constraintWidth_percent="0.85"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/log_in" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

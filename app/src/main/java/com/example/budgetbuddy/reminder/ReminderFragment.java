@@ -226,7 +226,7 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
     private void deleteReminderDocument(ReminderClass reminder) {
         if (reminder != null) {
             String documentId = reminder.getDocumentId();
-            if (documentId != null) {
+            if (documentId  != null) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 CollectionReference remindersRef = db.collection("reminders");
 
