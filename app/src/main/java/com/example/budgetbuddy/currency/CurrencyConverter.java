@@ -224,18 +224,14 @@ public class CurrencyConverter extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-
-    // Method to display conversion result
     private void displayConversionResult(double convertedAmount) {
         conversion_rate.setText(String.valueOf(convertedAmount));
     }
 
-    // Method to handle errors
     private void handleError(String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
-    // Method to close the activity
     public void CloseCurrencyConverter() {
         finish();
     }

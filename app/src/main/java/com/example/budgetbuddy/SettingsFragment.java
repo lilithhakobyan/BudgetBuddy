@@ -1,19 +1,15 @@
 package com.example.budgetbuddy;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.budgetbuddy.currency.CurrencyConverter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -22,8 +18,7 @@ public class SettingsFragment extends Fragment {
 
     private static final int RESULT_LOAD_IMG = 1;
     private static final int RESULT_OK = -1;
-    private TextView emailTextView, signOutTextView, currencyTextView;
-    private ImageView profilePicture;
+    private TextView emailTextView, signOutTextView, aboutUs;
     private FirebaseAuth mAuth;
 
     @Nullable
@@ -35,17 +30,17 @@ public class SettingsFragment extends Fragment {
 
         emailTextView = view.findViewById(R.id.email_text);
         signOutTextView = view.findViewById(R.id.log_out);
-        currencyTextView = view.findViewById(R.id.currency_tv);
+        aboutUs = view.findViewById(R.id.about_us_text);
 
-
-        currencyTextView.setOnClickListener(new View.OnClickListener() {
+        aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(requireContext(), CurrencyConverter.class);
-                startActivity(intent);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new AboutUs())
+                        .addToBackStack(null)
+                        .commit();
             }
         });
-
 
         signOutTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,14 +69,4 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && data != null) {
-            Uri selectedImageUri = data.getData();
-
-            profilePicture.setImageURI(selectedImageUri);
-        }
-    }
 }

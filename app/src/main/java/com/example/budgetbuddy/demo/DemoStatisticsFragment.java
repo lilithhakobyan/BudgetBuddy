@@ -52,6 +52,9 @@ public class DemoStatisticsFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(entries, "Incomes and Expenses");
         dataSet.setColors(colors);
 
+
+        dataSet.setDrawValues(false);
+
         PieData data = new PieData(dataSet);
         pieChart.setData(data);
 

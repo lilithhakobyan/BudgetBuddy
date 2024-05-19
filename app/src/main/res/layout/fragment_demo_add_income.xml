@@ -1,187 +1,236 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-tools:context=".demo.DemoAddIncomeFragment">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".demo.DemoAddIncomeFragment">
 
-<ImageView
-    android:id="@+id/close_income_demo"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:src="@drawable/close"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    android:layout_marginTop="30dp"
-    android:layout_marginEnd="20dp" />
-
-
-<TextView
-    android:id="@+id/income_text_d"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Income"
-    android:textStyle="bold"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/close_income_demo"/>
-
-<RelativeLayout
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:id="@+id/relative_d"
-    app:layout_constraintTop_toBottomOf="@+id/income_text_d"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
-
-    <TextView
-        android:id="@+id/income_decs_d"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Description"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_below="@+id/income_text_d"
-        tools:ignore="NotSibling" />
-
-    <EditText
-        android:id="@+id/desc_edit_text_d"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/expense_layout_d"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/income_decs_d"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:hint="Description"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="wrap_content">
 
-</RelativeLayout>
-
-
-
-<LinearLayout
-    android:id="@+id/income_category_d"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toBottomOf="@+id/relative_d"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
-
-    <TextView
-        android:id="@+id/select_category_d"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Select Category"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_weight="1"/>
-
-    <ImageView
-        android:id="@+id/select_icon_d"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/select_icon"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"/>
-
-</LinearLayout>
-
-<TextView
-    android:id="@+id/amount_text_d"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Amount size"
-    android:layout_marginStart="20dp"
-    app:layout_constraintTop_toBottomOf="@+id/income_category_d"/>
+        <ImageView
+            android:id="@+id/close_income_demo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintHeight_percent="0.07" />
 
 
-<EditText
-    android:id="@+id/amount_edit_text_d"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:layout_marginStart="20dp"
-    android:layout_marginEnd="8dp"
-    android:hint="Amount"
-    android:inputType="number"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toStartOf="@id/currency_spinner_d"
-    app:layout_constraintTop_toBottomOf="@+id/amount_text_d" />
-
-
-<Spinner
-    android:id="@+id/currency_spinner_d"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginEnd="20dp"
-    app:layout_constraintStart_toEndOf="@id/amount_edit_text_d"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/amount_text_d" />
-<TextView
-    android:id="@+id/frequency_label_d"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Adding Frequency"
-    android:textStyle="bold"
-    app:layout_constraintTop_toBottomOf="@id/currency_spinner_d"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="50dp"
-    android:layout_marginStart="20dp"/>
-
-
-<RadioGroup
-    android:id="@+id/repeat_frequency_group_d"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintTop_toBottomOf="@+id/frequency_label_d"
-    android:layout_marginTop="10dp"
-    android:layout_marginStart="20dp">
-
-
-    <RadioButton
-        android:id="@+id/every_day_radio_button_d"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Every day"/>
-
-    <RadioButton
-        android:id="@+id/weekly_radio_button_d"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Weekly"/>
-
-
-    <RadioButton
-        android:id="@+id/monthly_radio_button_d"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Monthly"/>
-
-    <RadioButton
-        android:id="@+id/annually_radio_button_d"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Annually"/>
-</RadioGroup>
-
-<Button
-    android:id="@+id/button_d"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
-    android:backgroundTint="@color/dark_blue"
-    android:text="Save"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/income_text_d"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="Income"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/close_income_demo"
+            android:layout_marginTop="16dp"
+            app:layout_constraintHeight_percent="0.07" />
 
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/relative_d"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="52dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.14"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/income_text_d"
+            app:layout_constraintWidth_percent="1">
+
+            <TextView
+                android:id="@+id/income_decs_d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Description"
+                android:textColor="@color/dark_blue"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_below="@+id/income_text_d"
+                tools:ignore="NotSibling" />
+
+            <EditText
+                android:id="@+id/desc_edit_text_d"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:hint="Description"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/income_decs_d" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/income_category_d"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.14"
+            app:layout_constraintTop_toBottomOf="@+id/relative_d"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Category"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                android:id="@+id/select_category_d"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Select Category"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintWidth_percent="0.8" />
+
+            <ImageView
+                android:id="@+id/select_icon_d"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/select_icon"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <TextView
+            android:id="@+id/amount_text_d"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="Amount size"
+            android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/income_category_d"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHeight_percent="0.06" />
+
+        <EditText
+            android:id="@+id/amount_edit_text_d"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Amount"
+            android:inputType="number"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/currency_spinner_d"
+            app:layout_constraintTop_toBottomOf="@+id/amount_text_d"
+            app:layout_constraintWidth_percent="0.5"
+            app:layout_constraintHeight_percent="0.07" />
+
+        <Spinner
+            android:id="@+id/currency_spinner_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintStart_toEndOf="@id/amount_edit_text_d"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/amount_text_d"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <TextView
+            android:id="@+id/frequency_label_d"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="Adding Frequency"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/currency_spinner_d"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="80dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintHeight_percent="0.07"/>
+
+
+        <RadioGroup
+            android:id="@+id/repeat_frequency_group_d"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/frequency_label_d"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintHeight_percent="0.28">
+
+
+            <RadioButton
+                android:id="@+id/every_day_radio_button_d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Every day"/>
+
+            <RadioButton
+                android:id="@+id/weekly_radio_button_d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekly"/>
+
+
+            <RadioButton
+                android:id="@+id/monthly_radio_button_d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monthly"/>
+
+            <RadioButton
+                android:id="@+id/annually_radio_button_d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Annually"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/button_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="@color/dark_blue"
+            android:text="Save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/repeat_frequency_group_d"/>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
+
+
+
+
+

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_blue"
-    tools:context=".SettingsFragment">
+    tools:context=".DemoSettingsFragment">
 
     <TextView
         android:id="@+id/acc_text"
@@ -18,8 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        app:layout_constraintHeight_percent="0.4"/>
+        android:layout_marginTop="40dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,8 +27,7 @@
         android:background="@drawable/dialog_bkg"
         app:layout_constraintTop_toBottomOf="@id/acc_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="180dp"
-        app:layout_constraintHeight_percent="0.9">
+        android:layout_marginTop="80dp">
 
         <TextView
             android:id="@+id/email_text"
@@ -40,7 +38,7 @@
             android:drawablePadding="18dp"
             android:textSize="16sp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="50dp"/>
 
@@ -58,10 +56,10 @@
 
 
         <TextView
-            android:id="@+id/log_out"
+            android:id="@+id/log_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Log Out"
+            android:text="Log In"
             android:drawablePadding="18dp"
             android:drawableStart="@drawable/logout"
             android:textSize="16sp"

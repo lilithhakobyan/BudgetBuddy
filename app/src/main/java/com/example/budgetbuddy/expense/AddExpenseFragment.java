@@ -32,11 +32,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 public class AddExpenseFragment extends Fragment {
-
-    public interface CategorySelectionListener {
-        void onCategorySelected(String categoryName, int categoryIcon);
-    }
-
     private TextView selectCategoryTextView;
     private ImageView selectIconButton;
     private ExpenseCategory selectedCategory;

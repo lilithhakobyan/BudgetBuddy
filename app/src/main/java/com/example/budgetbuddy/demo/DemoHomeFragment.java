@@ -44,7 +44,7 @@ public class DemoHomeFragment extends Fragment {
             public void onClick(View v) {
                 DemoActivity activity = (DemoActivity) getActivity();
                 if (activity != null) {
-                    activity.loadFragment(new DemoIncomeFragment(), false);
+                    activity.loadFragment(new DemoIncomeFragment());
                 }
             }
         });
@@ -54,7 +54,7 @@ public class DemoHomeFragment extends Fragment {
             public void onClick(View v) {
                 DemoActivity activity = (DemoActivity) getActivity();
                 if (activity != null) {
-                    activity.loadFragment(new DemoExpenseFragment(), false);
+                    activity.loadFragment(new DemoExpenseFragment());
                 }
             }
         });
@@ -63,9 +63,9 @@ public class DemoHomeFragment extends Fragment {
         itemList = new ArrayList<>();
 
 
-        itemList.add(new ListItem("Salary", "Monthly income", R.drawable.i, "+ $4000", "Income"));
-        itemList.add(new ListItem("Rent", "Monthly rent payment", R.drawable.e, "- $1000", "Expense"));
-        itemList.add(new ListItem("Utilities", "Monthly utilities payment", R.drawable.e, "- $300", "Expense"));
+        itemList.add(new ListItem("Salary", "Description: Monthly income", R.drawable.i, "Amount: $4000", "Income"));
+        itemList.add(new ListItem("Rent", "Description: Monthly rent payment", R.drawable.e, "Amount: $1000", "Expense"));
+        itemList.add(new ListItem("Utilities", "Description: Monthly utilities payment", R.drawable.e, "Amount: $300", "Expense"));
 
 
         adapter = new MyListAdapter(getContext(), itemList);

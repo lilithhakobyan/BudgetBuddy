@@ -10,12 +10,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.budgetbuddy.R;
@@ -29,7 +29,7 @@ public class DemoAddIncomeFragment extends Fragment {
     private String selectedCurrency;
     private IncomeCategory selectedCategoryDemo;
     private Button save_d;
-    LinearLayout incomeCategoryLayoutDemo;
+    ConstraintLayout incomeCategoryLayoutDemo;
 
 
     public DemoAddIncomeFragment() {

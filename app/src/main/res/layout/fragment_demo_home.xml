@@ -38,7 +38,7 @@
             android:id="@+id/balanceTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Balance"
+            android:text="Balance: 2700$"
             android:textColor="@color/white"
             android:layout_marginStart="20dp"
             android:textStyle="bold"

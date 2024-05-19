@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.budgetbuddy.R;
@@ -25,7 +25,7 @@ public class DemoAddExpenseFragment extends Fragment {
 
     private String selectedCurrency;
     private ImageView closeD;
-    LinearLayout expenseCategoryLayoutDemo;
+    ConstraintLayout expenseCategoryLayoutDemo;
 
     public DemoAddExpenseFragment() {
 
@@ -70,7 +70,7 @@ public class DemoAddExpenseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        closeD = view.findViewById(R.id.close_expense_d);
+        closeD = view.findViewById(R.id.close_expense_demo);
         expenseCategoryLayoutDemo = view.findViewById(R.id.expense_category_d);
 
         closeD.setOnClickListener(new View.OnClickListener() {

@@ -102,7 +102,6 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
         Expense expense = expenseList.get(position);
         String expenseId = expense.getId();
 
-        // Ensure expenseId is not null before attempting to delete
         if (expenseId != null && !expenseId.isEmpty()) {
             db.collection("expense")
                     .document(expenseId)

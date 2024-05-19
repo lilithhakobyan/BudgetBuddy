@@ -64,7 +64,7 @@
             android:id="@+id/category_text_view_d"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Category: "/>
+            android:text="Category: Not selected"/>
 
         <TextView
             android:id="@+id/description_text_view_d"
