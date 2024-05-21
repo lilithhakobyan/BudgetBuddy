@@ -19,6 +19,7 @@ import com.example.budgetbuddy.expense.Expense;
 import com.example.budgetbuddy.expense.ExpenseFragment;
 import com.example.budgetbuddy.income.Income;
 import com.example.budgetbuddy.income.IncomeFragment;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -114,7 +115,7 @@ public class HomeFragment extends Fragment  {
                 }
             }
         });
-        
+
 
         sharedViewModel.getIncomeList().observe(getViewLifecycleOwner(), incomes -> {
             updateCombinedList();
@@ -129,8 +130,11 @@ public class HomeFragment extends Fragment  {
         });
     }
 
+    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
     private void fetchIncomeData() {
         FirebaseFirestore.getInstance().collection("income")
+                .whereEqualTo("id", userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -148,6 +152,7 @@ public class HomeFragment extends Fragment  {
 
     private void fetchExpenseData() {
         FirebaseFirestore.getInstance().collection("expense")
+                .whereEqualTo("id", userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

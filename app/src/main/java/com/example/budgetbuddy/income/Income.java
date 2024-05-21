@@ -9,9 +9,10 @@ public class Income {
     private String description;
     private String currency;
     private String userId;
-    public Income() {
 
+    public Income() {
     }
+
 
     public Income(double amount, String category, String description, String currency, String userId) {
         this.amount = amount;
@@ -19,8 +20,13 @@ public class Income {
         this.description = description;
         this.currency = currency;
         this.userId = userId;
+        this.id = generateUniqueId(category, description);
     }
 
+
+    private String generateUniqueId(String category, String description) {
+        return category + "_" + description;
+    }
 
     public String getAmountAsFormattedString() {
         DecimalFormat format = new DecimalFormat("0.00");

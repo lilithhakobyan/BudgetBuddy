@@ -22,6 +22,7 @@ import com.example.budgetbuddy.adapter.ExpenseAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -77,8 +78,10 @@ public class ExpenseFragment extends Fragment implements ExpenseAdapter.OnDelete
         return view;
     }
 
+    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private void fetchExpenseData() {
         db.collection("expense")
+                .whereEqualTo("id", userId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     expenseList.clear();

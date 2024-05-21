@@ -1,5 +1,6 @@
 package com.example.budgetbuddy.income;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import static com.example.budgetbuddy.currency.CurrencyUtils2.fetchCurrencies;
 import static com.example.budgetbuddy.income.IncomeAlarmReceiver.CHANNEL_ID;
 import static com.example.budgetbuddy.income.IncomeAlarmReceiver.NOTIFICATION_ID;
@@ -39,10 +40,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.SharedViewModel;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddIncomeFragment extends Fragment {
 
@@ -197,18 +201,21 @@ public class AddIncomeFragment extends Fragment {
     }
 
     private void saveIncome() {
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "User is not authenticated");
+            return;
+        }
         String amountStr = amountEditText.getText().toString().trim();
         String description = descEditText.getText().toString().trim();
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         if (auth.getCurrentUser() == null) {
-            // User is not authenticated, handle accordingly
             return;
         }
 
-
         if (userId == null) {
-            // User ID is null, handle accordingly
             return;
         }
 
@@ -234,19 +241,26 @@ public class AddIncomeFragment extends Fragment {
             return;
         }
 
-        String[] parts = amountStr.split(" ");
-        double amount = Double.parseDouble(parts[0]);
-
+        double amount = Double.parseDouble(amountStr);
 
         Income income = new Income(amount, selectedCategory.getCategoryName(), description, selectedCurrency, userId);
+        Map<String, Object> incomeData = new HashMap<>();
+        incomeData.put("id", userId);
+        incomeData.put("amount", amount);
+        incomeData.put("category", selectedCategory.getCategoryName());
+        incomeData.put("currency", selectedCurrency);
+        incomeData.put("description", description);
+
         db.collection("income")
-                .add(income)
+                .add(incomeData) // Pass the income data here
                 .addOnSuccessListener(documentReference -> {
-
+                    String incomeId = documentReference.getId(); // Get the generated document ID
+                    income.setId(incomeId); // Set the ID in the Income object
                     List<Income> updatedIncomeList = sharedViewModel.getIncomeList().getValue();
-                    updatedIncomeList.add(income);
-                    sharedViewModel.setIncomeList(updatedIncomeList);
-
+                    if (updatedIncomeList != null) {
+                        updatedIncomeList.add(income);
+                        sharedViewModel.setIncomeList(updatedIncomeList);
+                    }
 
                     if (getActivity() != null) {
                         Toast.makeText(getActivity(), "Income saved successfully", Toast.LENGTH_SHORT).show();
@@ -263,20 +277,19 @@ public class AddIncomeFragment extends Fragment {
 
         if (selectedFrequencyId == R.id.every_day_radio_button) {
             selectedFrequency = "Every day";
-            scheduleIncomeAddition(selectedFrequency);
         } else if (selectedFrequencyId == R.id.weekly_radio_button) {
             selectedFrequency = "Weekly";
-            scheduleIncomeAddition(selectedFrequency);
         } else if (selectedFrequencyId == R.id.monthly_radio_button) {
             selectedFrequency = "Monthly";
-            scheduleIncomeAddition(selectedFrequency);
         } else if (selectedFrequencyId == R.id.annually_radio_button) {
             selectedFrequency = "Annually";
+        }
+
+        if (!selectedFrequency.isEmpty()) {
             scheduleIncomeAddition(selectedFrequency);
-        } else {
-            // Handle default case
         }
     }
+
 
 
     private void scheduleIncomeAddition(String frequency) {

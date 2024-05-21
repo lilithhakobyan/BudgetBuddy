@@ -1,5 +1,6 @@
 package com.example.budgetbuddy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,9 @@ public class SettingsFragment extends Fragment {
 
     private void signOut() {
         FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(getActivity(), WelcomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
         getActivity().finish();
     }
 

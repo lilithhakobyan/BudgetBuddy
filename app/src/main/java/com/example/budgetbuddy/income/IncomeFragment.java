@@ -21,6 +21,7 @@ import com.example.budgetbuddy.SharedViewModel;
 import com.example.budgetbuddy.SwipeToDeleteCallback;
 import com.example.budgetbuddy.adapter.IncomeAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -89,8 +90,10 @@ public class IncomeFragment extends Fragment implements IncomeAdapter.OnDeleteCl
         return view;
     }
 
+    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     public void fetchIncomeData() {
         FirebaseFirestore.getInstance().collection("income")
+                .whereEqualTo("id", userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

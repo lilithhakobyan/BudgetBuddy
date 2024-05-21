@@ -96,6 +96,11 @@ public class ReminderFragment extends Fragment implements ReminderAdapter.OnItem
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        if (db == null) {
+            Log.e(TAG, "Firestore instance is null. Cannot fetch income data.");
+            return;
+        }
+
         if (user != null) {
             db.collection("reminders")
                     .whereEqualTo("userId", user.getUid())
