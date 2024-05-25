@@ -26,12 +26,15 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StatisticsFragment extends Fragment {
 
     private PieChart pieChart;
     private SharedViewModel sharedViewModel;
+    private Map<String, Float> conversionRates;
 
     @Nullable
     @Override
@@ -47,11 +50,18 @@ public class StatisticsFragment extends Fragment {
 
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
+        // Initialize conversion rates (example rates, replace with actual data or API calls)
+        conversionRates = new HashMap<>();
+        conversionRates.put("USD_TO_AMD", 470.0f);
+        conversionRates.put("EUR_TO_AMD", 520.0f);
+        conversionRates.put("AMD_TO_AMD", 1.0f);  // Base currency
+        // Add more rates as needed
+
         sharedViewModel.getIncomeList().observe(getViewLifecycleOwner(), new Observer<List<Income>>() {
             @Override
             public void onChanged(List<Income> incomes) {
-                float totalIncome = calculateTotalIncome(incomes);
-                float totalExpenses = calculateTotalExpenses(sharedViewModel.getExpenseList().getValue());
+                float totalIncome = calculateTotalIncome(incomes, "AMD");
+                float totalExpenses = calculateTotalExpenses(sharedViewModel.getExpenseList().getValue(), "AMD");
                 populatePieChart(totalIncome, totalExpenses);
             }
         });
@@ -59,8 +69,8 @@ public class StatisticsFragment extends Fragment {
         sharedViewModel.getExpenseList().observe(getViewLifecycleOwner(), new Observer<List<Expense>>() {
             @Override
             public void onChanged(List<Expense> expenses) {
-                float totalIncome = calculateTotalIncome(sharedViewModel.getIncomeList().getValue());
-                float totalExpenses = calculateTotalExpenses(expenses);
+                float totalIncome = calculateTotalIncome(sharedViewModel.getIncomeList().getValue(), "AMD");
+                float totalExpenses = calculateTotalExpenses(expenses, "AMD");
                 populatePieChart(totalIncome, totalExpenses);
             }
         });
@@ -68,7 +78,7 @@ public class StatisticsFragment extends Fragment {
 
     private void setupPieChart() {
         Legend legend = pieChart.getLegend();
-        legend.setTextSize(20f);
+        legend.setTextSize(40f);
     }
 
     @Override
@@ -77,34 +87,52 @@ public class StatisticsFragment extends Fragment {
         setupPieChart();
     }
 
-
-    private float calculateTotalIncome(List<Income> incomes) {
+    private float calculateTotalIncome(List<Income> incomes, String targetCurrency) {
         float totalIncome = 0;
         if (incomes != null) {
             for (Income income : incomes) {
-                totalIncome += income.getAmount();
+                float convertedAmount = convertCurrency((double) income.getAmount(), income.getCurrency(), targetCurrency);
+                totalIncome += convertedAmount;
             }
         }
         return totalIncome;
     }
 
-    private float calculateTotalExpenses(List<Expense> expenses) {
+    private float calculateTotalExpenses(List<Expense> expenses, String targetCurrency) {
         float totalExpenses = 0;
         if (expenses != null) {
             for (Expense expense : expenses) {
-                totalExpenses += expense.getAmount();
+                float convertedAmount = convertCurrency((double) expense.getAmount(), expense.getCurrency(), targetCurrency);
+                totalExpenses += convertedAmount;
             }
         }
         return totalExpenses;
     }
 
+    private float convertCurrency(double amount, String fromCurrency, String toCurrency) {
+        String conversionKey = fromCurrency + "_TO_" + toCurrency;
+        Float conversionRate = conversionRates.get(conversionKey);
+
+        if (conversionRate != null) {
+            return (float) (amount * conversionRate);
+        } else {
+            // Handle missing conversion rate (e.g., log an error, throw an exception, or return a default value)
+            // For simplicity, let's assume the conversion rate is 1 if not found
+            return (float) amount;
+        }
+    }
+
     private void populatePieChart(float income, float expenses) {
         List<PieEntry> entries = new ArrayList<>();
-        if (income > 0) {
-            entries.add(new PieEntry(income, "Incomes"));
-        }
-        if (expenses > 0) {
-            entries.add(new PieEntry(expenses, "Expenses"));
+        float total = income + expenses;
+
+        if (total > 0) {
+            if (income > 0) {
+                entries.add(new PieEntry(income / total * 100, "Incomes"));
+            }
+            if (expenses > 0) {
+                entries.add(new PieEntry(expenses / total * 100, "Expenses"));
+            }
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "");
@@ -112,16 +140,19 @@ public class StatisticsFragment extends Fragment {
                 getResources().getColor(R.color.main)});
         PieData data = new PieData(dataSet);
 
-        dataSet.setDrawValues(false);
+        dataSet.setDrawValues(true);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(Color.WHITE);
 
         pieChart.setData(data);
+        dataSet.setDrawValues(false);
         pieChart.getDescription().setEnabled(false);
         pieChart.setCenterText("Incomes and Expenses");
         pieChart.animateY(1000);
         pieChart.invalidate();
 
         Legend legend = pieChart.getLegend();
-        legend.setTextSize(13f);
+        legend.setTextSize(12f);
         legend.setXEntrySpace(20f);
 
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -131,7 +162,7 @@ public class StatisticsFragment extends Fragment {
                     PieEntry pieEntry = (PieEntry) e;
                     if (pieEntry.getLabel().equals("Incomes")) {
                         openIncomeCategoriesPieChart();
-                    }else if (pieEntry.getLabel().equals("Expenses")) {
+                    } else if (pieEntry.getLabel().equals("Expenses")) {
                         openExpenseCategoriesPieChart();
                     }
                 }
@@ -139,7 +170,6 @@ public class StatisticsFragment extends Fragment {
 
             @Override
             public void onNothingSelected() {
-
             }
         });
 

@@ -1,4 +1,3 @@
-// IncomePieChartFragment.java
 package com.example.budgetbuddy;
 
 import android.graphics.Color;
@@ -11,12 +10,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.budgetbuddy.income.Income;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.List;
 public class IncomePieChart extends Fragment {
 
     private PieChart pieChart;
+    private SharedViewModel sharedViewModel;
 
     @Nullable
     @Override
@@ -36,24 +40,34 @@ public class IncomePieChart extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         pieChart = view.findViewById(R.id.incomePieChart);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-        populatePieChart();
+        sharedViewModel.getIncomeList().observe(getViewLifecycleOwner(), new Observer<List<Income>>() {
+            @Override
+            public void onChanged(List<Income> incomes) {
+                populatePieChart(incomes);
+            }
+        });
     }
 
-    private void populatePieChart() {
+    private void populatePieChart(List<Income> incomes) {
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(3000f, "Salary"));
-        entries.add(new PieEntry(1500f, "Freelance"));
-        entries.add(new PieEntry(1000f, "Other"));
 
-        int[] pastelColors = new int[]{
-                Color.rgb(215, 153, 194), // light pink
-                Color.rgb(255, 209, 128), // light orange
-                Color.rgb(168, 206, 255)  // light blue
-        };
+        // Calculate total income
+        float totalIncome = 0;
+        for (Income income : incomes) {
+            totalIncome += income.getAmount();
+        }
+
+        for (Income income : incomes) {
+            // Cast double value to float here
+            float percentage = (float) ((income.getAmount() / totalIncome) * 100);
+            // Assuming getCategory() retrieves the category of income
+            entries.add(new PieEntry(percentage, income.getCategory()));
+        }
 
         PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(pastelColors);
+        dataSet.setColors(ColorTemplate.PASTEL_COLORS);
         PieData data = new PieData(dataSet);
 
         pieChart.setData(data);
@@ -62,13 +76,13 @@ public class IncomePieChart extends Fragment {
         pieChart.animateY(1000);
         pieChart.invalidate();
 
-        // Set legend text size
+        dataSet.setDrawValues(false);
+
         Legend legend = pieChart.getLegend();
-        legend.setTextSize(13f);
+        legend.setTextSize(40f);
         legend.setXEntrySpace(20f);
 
-        pieChart.setNoDataTextColor(Color.RED); // Set the desired color for the text
-        pieChart.setNoDataTextTypeface(Typeface.DEFAULT_BOLD); // Optionally set the text typeface
+        pieChart.setNoDataTextColor(Color.RED);
+        pieChart.setNoDataTextTypeface(Typeface.DEFAULT_BOLD);
     }
-
 }

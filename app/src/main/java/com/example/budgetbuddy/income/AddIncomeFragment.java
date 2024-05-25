@@ -252,10 +252,10 @@ public class AddIncomeFragment extends Fragment {
         incomeData.put("description", description);
 
         db.collection("income")
-                .add(incomeData) // Pass the income data here
+                .add(incomeData)
                 .addOnSuccessListener(documentReference -> {
-                    String incomeId = documentReference.getId(); // Get the generated document ID
-                    income.setId(incomeId); // Set the ID in the Income object
+                    String incomeId = documentReference.getId();
+                    income.setId(incomeId);
                     List<Income> updatedIncomeList = sharedViewModel.getIncomeList().getValue();
                     if (updatedIncomeList != null) {
                         updatedIncomeList.add(income);

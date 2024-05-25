@@ -1,11 +1,14 @@
 package com.example.budgetbuddy.expense;
 
+import java.text.DecimalFormat;
+
 public class Expense {
     private String id;
     private double amount;
     private String category;
     private String description;
     private String currency;
+    private String userId;
     public Expense() {
 
     }
@@ -16,8 +19,18 @@ public class Expense {
         this.category = category;
         this.description = description;
         this.currency = currency;
+        this.userId = userId;
+        this.id = generateUniqueId(category, description);
     }
 
+    private String generateUniqueId(String category, String description) {
+        return category + "_" + description;
+    }
+
+    public String getAmountAsFormattedString() {
+        DecimalFormat format = new DecimalFormat("0.00");
+        return format.format(amount) + " " + currency;
+    }
 
     public String getId() {
         return id;

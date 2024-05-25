@@ -10,7 +10,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.budgetbuddy.expense.Expense;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
@@ -18,11 +21,15 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExpensePieChart extends Fragment {
 
     private PieChart pieChart;
+    private SharedViewModel sharedViewModel;
+    private Map<String, Float> conversionRates;
 
     @Nullable
     @Override
@@ -36,19 +43,38 @@ public class ExpensePieChart extends Fragment {
 
         pieChart = view.findViewById(R.id.expensePieChart);
 
-        populatePieChart();
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        // Initialize conversion rates (example rates, replace with actual data or API calls)
+        conversionRates = new HashMap<>();
+        conversionRates.put("USD_TO_AMD", 470.0f);
+        conversionRates.put("EUR_TO_AMD", 520.0f);
+        conversionRates.put("AMD_TO_AMD", 1.0f);  // Base currency
+        // Add more rates as needed
+
+        sharedViewModel.getExpenseList().observe(getViewLifecycleOwner(), new Observer<List<Expense>>() {
+            @Override
+            public void onChanged(List<Expense> expenses) {
+                populatePieChart(expenses);
+            }
+        });
     }
 
-    private void populatePieChart() {
-        // Sample data for expense categories
+    private void populatePieChart(List<Expense> expenses) {
+        Map<String, Float> categoryTotals = new HashMap<>();
+
+        for (Expense expense : expenses) {
+            float amount = (float) expense.getAmount();
+            String category = expense.getCategory();
+            float convertedAmount = convertCurrency(amount, expense.getCurrency(), "AMD");
+            categoryTotals.put(category, categoryTotals.getOrDefault(category, 0f) + convertedAmount);
+        }
+
+
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(200f, "Rent"));
-        entries.add(new PieEntry(150f, "Healthcare"));
-        entries.add(new PieEntry(100f, "Food"));
-        entries.add(new PieEntry(80f, "Transportation"));
-        entries.add(new PieEntry(50f, "Utilities"));
-        entries.add(new PieEntry(30f, "Entertainment"));
-        entries.add(new PieEntry(20f, "Other"));
+        for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
+            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
+        }
 
         // Define pastel colors
         int[] pastelColors = new int[]{
@@ -71,13 +97,26 @@ public class ExpensePieChart extends Fragment {
         pieChart.animateY(1000);
         pieChart.invalidate();
 
-        // Set legend text size
+        dataSet.setDrawValues(false);
+
         Legend legend = pieChart.getLegend();
-        legend.setTextSize(13f);
+        legend.setTextSize(40f);
         legend.setXEntrySpace(20f);
 
         pieChart.setNoDataTextColor(Color.RED);
         pieChart.setNoDataTextTypeface(Typeface.DEFAULT_BOLD);
     }
 
+    private float convertCurrency(float amount, String fromCurrency, String toCurrency) {
+        String conversionKey = fromCurrency + "_TO_" + toCurrency;
+        Float conversionRate = conversionRates.get(conversionKey);
+
+        if (conversionRate != null) {
+            return amount * conversionRate;
+        } else {
+            // Handle missing conversion rate (e.g., log an error, throw an exception, or return a default value)
+            // For simplicity, let's assume the conversion rate is 1 if not found
+            return amount;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.budgetbuddy.expense;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import static com.example.budgetbuddy.currency.CurrencyUtils2.fetchCurrencies;
 
 import android.app.AlertDialog;
@@ -27,9 +28,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.budgetbuddy.R;
 import com.example.budgetbuddy.SharedViewModel;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddExpenseFragment extends Fragment {
     private TextView selectCategoryTextView;
@@ -165,6 +169,13 @@ public class AddExpenseFragment extends Fragment {
     private void saveExpense() {
         String amountStr = amountEditText.getText().toString().trim();
         String description = descEditText.getText().toString().trim();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Log.e(TAG, "User is not authenticated");
+            return;
+        }
+
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         if (amountStr.isEmpty()) {
             amountEditText.setError("Amount is required");
@@ -191,8 +202,16 @@ public class AddExpenseFragment extends Fragment {
         double amount = Double.parseDouble(amountStr);
 
         Expense expense = new Expense(amount, selectedCategory.getCategoryName(), description, selectedCurrency);
+
+        Map<String, Object> expenseData = new HashMap<>();
+        expenseData.put("id", userId);
+        expenseData.put("amount", amount);
+        expenseData.put("category", selectedCategory.getCategoryName());
+        expenseData.put("currency", selectedCurrency);
+        expenseData.put("description", description);
+
         db.collection("expense")
-                .add(expense)
+                .add(expenseData)
                 .addOnSuccessListener(documentReference -> {
 
                     List<Expense> updatedExpenseList = sharedViewModel.getExpenseList().getValue();

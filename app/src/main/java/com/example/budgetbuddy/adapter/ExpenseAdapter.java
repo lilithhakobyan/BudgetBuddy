@@ -36,6 +36,10 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenseList.get(position);
+
+        holder.currencyTextView.setText(expense.getCurrency());
+        holder.amountTextView.setText(expense.getAmountAsFormattedString());
+
         if (expense != null) {
             holder.bind(expense);
         }
@@ -55,12 +59,14 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         private TextView categoryTextView;
         private TextView amountTextView;
         private TextView descriptionTextView;
+        private TextView currencyTextView;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
             categoryTextView = itemView.findViewById(R.id.category_text_view);
             amountTextView = itemView.findViewById(R.id.amount_text_view);
             descriptionTextView = itemView.findViewById(R.id.description_text_view);
+            currencyTextView = itemView.findViewById(R.id.currencyTextView);
         }
 
         public void bind(Expense expense) {

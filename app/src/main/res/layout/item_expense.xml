@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    android:gravity="center_vertical"
-    android:layout_marginTop="30dp">
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:padding="16dp"
+android:gravity="center_vertical"
+android:layout_marginTop="30dp">
 
 
-    <LinearLayout
+<LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="0.2"
+    android:orientation="horizontal">
+
+    <ImageView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.2"
-        android:orientation="horizontal">
+        android:layout_weight="1"
+        android:src="@drawable/e"
+        android:scaleType="fitCenter"/>
+</LinearLayout>
 
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/e"
-            android:scaleType="fitCenter"/>
-    </LinearLayout>
+<LinearLayout
+    android:id="@+id/linear"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Expense"
+        android:textColor="@color/dark_blue"
+        android:textStyle="bold"/>
+
 
     <LinearLayout
-        android:id="@+id/linear"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Expense"
-            android:textColor="@color/main"
-            android:textStyle="bold"/>
-
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/amount_text_view"
@@ -44,24 +49,29 @@
             android:text="Amount: " />
 
         <TextView
-            android:id="@+id/currency_text_view"
+            android:id="@+id/currencyTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Currency: " />
-
-        <TextView
-            android:id="@+id/category_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category: "/>
-
-        <TextView
-            android:id="@+id/description_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description: "/>
-
+            android:textColor="@color/black"
+            android:layout_marginEnd="8dp"
+            android:gravity="center_vertical"
+            android:text=""/>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/category_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category: "/>
+
+    <TextView
+        android:id="@+id/description_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description: "/>
+
+</LinearLayout>
 
 
 </LinearLayout>
+
